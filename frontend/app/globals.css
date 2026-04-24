@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  --color-bg: #0b0d10;
+  --color-bg-elev: #13161b;
+  --color-bg-raised: #1a1e24;
+  --color-border: #262b32;
+  --color-border-strong: #353c45;
+  --color-ink: #e7ecf1;
+  --color-ink-muted: #9aa4b2;
+  --color-ink-subtle: #626a76;
+
+  --color-accent: #7df9c5;     /* light mint — used for primary actions + running states */
+  --color-accent-deep: #1c9870;
+  --color-warn: #ffbf69;
+  --color-fail: #ff6b6b;
+  --color-info: #7ab8ff;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-bg-elev: var(--color-bg-elev);
+  --color-bg-raised: var(--color-bg-raised);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-subtle: var(--color-ink-subtle);
+  --color-accent: var(--color-accent);
+  --color-accent-deep: var(--color-accent-deep);
+  --color-warn: var(--color-warn);
+  --color-fail: var(--color-fail);
+  --color-info: var(--color-info);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* xyflow dark tweaks */
+.react-flow__renderer,
+.react-flow__pane {
+  background: var(--color-bg);
+}
+.react-flow__edge-path {
+  stroke: var(--color-border-strong);
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-accent);
+}
+.react-flow__controls {
+  background: var(--color-bg-elev);
+  border: 1px solid var(--color-border);
+}
+.react-flow__controls-button {
+  background: var(--color-bg-elev);
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
+}
+.react-flow__controls-button:hover {
+  background: var(--color-bg-raised);
+}
+.react-flow__attribution {
+  background: transparent !important;
+  color: var(--color-ink-subtle) !important;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* simple animations */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 40%, transparent); }
+  70% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+.pulse-ring {
+  animation: pulse-ring 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-elev) 0%,
+    var(--color-bg-raised) 50%,
+    var(--color-bg-elev) 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}

@@ -542,9 +542,14 @@ just test              # pytest + playwright smoke
 9. Image processing + OCR fallback + vision if ILMU supports it.
 10. Polish, decision-log UI, README with demo video link, PRD/SAD/TAD drafts.
 
-## 19. Open questions
+## 19. Open questions — resolved 2026-04-24
 
-- Does `ilmu-glm-5.1` support vision? If no, document processing is OCR-only; acceptable but noted.
-- Does `ilmu-glm-5.1` support tool-use reliably via the OpenAI-compatible interface? Confirm on first smoke call.
-- Embeddings needed for visitor assistant, or is the structured profile + raw content-doc text enough in-context? Default: structured profile only; upgrade to embeddings only if context budget breaks.
-- Auth beyond mock session — skip for MVP, flag in PRD.
+Smoke-tested via `backend/scripts/glm_smoke.py` against our live `ilmu-glm-5.1` key. Full log: `backend/scripts/glm_smoke_results.json`.
+
+- **Tool use (function calling): supported.** `tools` + `tool_choice={"type":"function","function":{"name":...}}` returns valid structured arguments. `verify_against_criteria` probe produced correct per-criterion verdicts with evidence.
+- **JSON mode: supported.** `response_format={"type":"json_object"}` returns strict JSON. `json_schema` mode is also advertised but `json_object` is what we rely on; we inject a schema-hint system message for shape control.
+- **Streaming: supported.** Standard OpenAI SSE; chunks assemble cleanly. Do not emit a decision-log entry until after the stream is consumed.
+- **`reasoning_effort`: supported.** Values: `low` / `medium` / `high`. GLM 5.1 is a thinking model — tiny `max_tokens` ceilings get eaten by the reasoning phase and yield empty `content`. Default in our client: `reasoning_effort="low"` on JSON-mode and tool-call paths, no override on free-form chat. Always budget ≥ 256 `max_tokens` on text responses.
+- **Vision: NOT supported on `ilmu-glm-5.1`.** The multimodal OpenAI content schema is accepted (no error) but the model consistently replies "No image provided" / "I cannot see any image" / "unknown" regardless of the attached PNG. Image documents therefore go through OCR (`pytesseract`) before GLM sees them — this is the baseline for T4 and T9. Confirm again when/if ILMU adds a vision-capable model to our key.
+- **Embeddings: not needed for MVP.** The visitor assistant grounds on the structured building profile + raw content-doc chunks passed in-context. 200k context is large enough for any single building. Upgrade to embeddings only if per-building content breaks the budget.
+- **Auth: mocked session for MVP.** Flagged in the PRD as future work.
