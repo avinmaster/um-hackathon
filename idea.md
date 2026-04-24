@@ -1,0 +1,4 @@
+
+The platform for the new buildings. The client interface is a big 3D model canvas, and it will have an AI chat which will answer questions and rotate/expand, show other models based on what user is asking. But the main part is the workflow, we should do some kind of workflow to customize businesses verification and registration of the new building, the idea is that each state and country has their own requirements, so we need to be able to make their own forms and submission flow.
+
+We focus on workflow and make marketplace part just static, but very beautiful frontend as a demo and that it solves real problem and only provider/building owner will have landing page which will be used to explain what's going on (additional very good thing).
