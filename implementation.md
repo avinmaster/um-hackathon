@@ -89,6 +89,10 @@ Under the hood, the platform is an **adaptive multi-modal verification workflow 
 | Realtime | SSE | Enough for workflow progress + assistant streaming |
 | Storage | S3 (prod) / local dir (dev) | Uploaded docs |
 
+### 4.1 shadcn scope
+
+shadcn/ui covers the standard surfaces — forms, dialogs, tabs, sheets, toasts, tables, directory cards, chat shells. The React Flow workflow canvas (custom step nodes) and the react-three-fiber 3D scene are bespoke; shadcn is a Tailwind/a11y foundation there, not a component library. Add the `shadcn` MCP server to `.mcp.json` so frontend work can scaffold primitives directly instead of hand-writing them.
+
 ## 5. Repository layout
 
 ```
