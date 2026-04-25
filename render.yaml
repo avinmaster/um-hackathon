@@ -1,3 +1,9 @@
+databases:
+  - name: opus-magnum-db
+    plan: free
+    databaseName: opus
+    user: opus
+
 services:
   - type: web
     name: opus-magnum-backend
@@ -16,8 +22,27 @@ services:
       - key: GLM_API_KEY
         sync: false
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: opus-magnum-db
+          property: connectionString
       - key: CORS_ORIGINS
         sync: false
       - key: SEED_ON_STARTUP
         value: "true"
+
+  - type: web
+    name: opus-magnum-frontend
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start -p $PORT
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      # Set this to the backend service URL after the first deploy lights up,
+      # e.g. https://opus-magnum-backend.onrender.com. Render's `fromService`
+      # only exposes host/port, not the https:// URL the browser needs.
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

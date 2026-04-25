@@ -1,90 +1,77 @@
-# Deploy — free, ~20 minutes
+# Deploy — free, one platform, ~15 minutes
 
-Stack: **Vercel** (frontend) + **Render** (backend) + **Neon** (Postgres).
-All three have permanent free tiers, no credit card.
+Everything runs on **Render**: backend, frontend, and Postgres. One signup,
+one dashboard. The free Postgres lasts 90 days (we only need it for the
+demo + judging window).
 
-> **Demo caveat — read this first.** Render free web services sleep after
-> 15 min idle and take ~30 s to wake. For a live demo, hit the URL once
-> a minute before judging. Render free disks are also ephemeral, so any
-> uploaded compliance/content PDFs disappear on redeploy. The demo seed
-> recreates Menara Demo + Shah Alam on every boot via `SEED_ON_STARTUP=true`.
+> **Demo caveat.** Render free web services sleep after 15 min idle and
+> wake in ~30 s. Hit both URLs once a minute before judging. Free disks
+> are ephemeral — uploaded PDFs vanish on redeploy. The demo seed
+> recreates Shah Alam + Menara Demo on every boot via `SEED_ON_STARTUP=true`.
 
-## 0. Push to GitHub
+## Prereqs
 
-Both Render and Vercel deploy from a Git repo. Push this repo to GitHub
-(public or private — both work on free tiers).
+- Repo pushed to GitHub (already true: `avinmaster/um-hackathon`).
+- A Render account. Sign up at <https://render.com> with **GitHub** —
+  fastest because Render needs to read your repo anyway.
 
-## 1. Database — Neon
+## Steps
 
-1. Go to <https://neon.tech>, sign up, create a project (any name).
-2. From the project dashboard, copy the **connection string**. It looks
-   like `postgresql://user:pass@ep-xxxx.aws.neon.tech/neondb?sslmode=require`.
-3. Keep that tab open — you'll paste this URL into Render in step 2.
+### 1. Apply the Blueprint
 
-## 2. Backend — Render
+1. Go to <https://dashboard.render.com> → **New** → **Blueprint**.
+2. Connect the `um-hackathon` repo. Render reads `render.yaml` and proposes:
+   - `opus-magnum-db` — free Postgres
+   - `opus-magnum-backend` — Python web service
+   - `opus-magnum-frontend` — Node web service
+3. Click **Apply**.
 
-1. Go to <https://render.com>, sign up, click **New → Blueprint**.
-2. Connect your GitHub repo. Render reads `render.yaml` automatically and
-   proposes one web service: `opus-magnum-backend`.
-3. Click **Apply**. The first build takes ~3 min.
-4. Open the service settings → **Environment** and fill in the three
-   `sync: false` vars:
+The DB provisions immediately. Both services start building. The backend
+takes ~3 min, the frontend ~4 min (next build is heavy).
 
-   | Key | Value |
-   |---|---|
-   | `GLM_API_KEY` | from your local `.env` |
-   | `DATABASE_URL` | the Neon connection string from step 1 |
-   | `CORS_ORIGINS` | leave blank for now — fill in after step 3 |
+### 2. Fill in the two `sync: false` secrets
 
-   `SEED_ON_STARTUP` is already set to `true` so the DB self-seeds on
-   first boot.
+When prompted (or in **Backend → Environment** afterwards), paste:
 
-5. Click **Manual Deploy → Deploy latest commit**. When it goes green,
-   visit `https://<your-service>.onrender.com/health` — it should return
-   `{"ok": true, "model": "ilmu-glm-5.1"}`.
-6. Copy the service URL (e.g. `https://opus-magnum-backend.onrender.com`)
-   for step 3.
+| Key | Value |
+|---|---|
+| `GLM_API_KEY` | from your local `.env` |
+| `CORS_ORIGINS` | leave blank for now — fill in step 3 |
 
-## 3. Frontend — Vercel
+`DATABASE_URL` is wired automatically from the Postgres instance.
+`SEED_ON_STARTUP` is already `true`, so the DB self-seeds on boot.
 
-1. Go to <https://vercel.com>, sign up, click **Add New → Project**.
-2. Import the same GitHub repo. Vercel will detect Next.js automatically.
-3. **Important**: set the **Root Directory** to `frontend`.
-4. Under **Environment Variables**, add:
+### 3. Wire frontend → backend
 
-   | Key | Value |
-   |---|---|
-   | `NEXT_PUBLIC_API_URL` | the Render URL from step 2.6 |
+When the backend finishes building, copy its public URL
+(e.g. `https://opus-magnum-backend.onrender.com`).
 
-5. Click **Deploy**. First build takes ~2 min.
-6. Copy the Vercel URL (e.g. `https://opus-magnum.vercel.app`).
+Then, in **Frontend → Environment**, set:
 
-## 4. Close the CORS loop
+| Key | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | the backend URL |
 
-Back in Render → Environment, set `CORS_ORIGINS` to your Vercel URL:
+And, in **Backend → Environment**, set:
 
-```
-CORS_ORIGINS=https://opus-magnum.vercel.app
-```
+| Key | Value |
+|---|---|
+| `CORS_ORIGINS` | the frontend URL, e.g. `https://opus-magnum-frontend.onrender.com` |
 
-(All `*.vercel.app` preview URLs are also accepted via regex, so this
-mainly matters if you wire up a custom domain later.)
+Trigger a manual redeploy on the frontend so it picks up the env var.
 
-Trigger a redeploy on Render. Done.
+### 4. Verify
 
-## Verify end-to-end
+- Backend: `https://<backend>.onrender.com/health` → `{"ok": true, ...}`
+- Frontend: `https://<frontend>.onrender.com` → buildings page lists
+  **Menara Demo** (seeded on boot).
+- `/admin` shows the Shah Alam template; starting a run on Menara Demo
+  streams the graph and lands GLM calls.
 
-1. Open the Vercel URL.
-2. The buildings page should list **Menara Demo** (seeded on boot).
-3. Open `/admin` — Shah Alam template should be visible.
-4. Open `/onboard` for Menara Demo and start a run. The graph should
-   stream and GLM calls should land.
+## After it's live
 
-## After the demo
-
-- Turn `SEED_ON_STARTUP` off after the first successful boot if you
-  start authoring real data — it's idempotent but logs noise on every
+- Turn `SEED_ON_STARTUP` off after the first successful boot if you start
+  authoring real data — the seed is idempotent but logs noise on every
   cold start.
-- If you ever need persistent uploads, attach a Render disk (paid) or
-  swap `STORAGE_BACKEND=local` for an S3/R2 backend (out of scope for
-  the hackathon submission).
+- For persistent uploads, attach a Render disk (paid) or wire an S3/R2
+  backend. Out of scope for the hackathon submission.
