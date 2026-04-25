@@ -1,8 +1,8 @@
-# Software Architecture Document
+# System Analysis Document
 
 **Product:** Opus Magnum — Adaptive Onboarding Workflow Platform
 **Submission:** UMHackathon 2026 · Domain 1
-**Scope:** MVP architecture as shipped. Companion to the TAD (technology-level rationale) and the QATD (test strategy).
+**Scope:** End-to-end analysis of the system as shipped — surfaces, components, runtime data flows, the decision-log audit substrate, failure modes, and the project timeline. Companion to the TAD (technology-level rationale) and the QATD (test strategy).
 
 ---
 
@@ -253,7 +253,7 @@ The plan is structured as three waves (foundation → parallel features → poli
 | Lee Yih Shen | Orchestration & quality assurance | Work coordination, test coverage, review cycles |
 | Samandar Erkinjonov | Product & presentation | Product narrative, pitch deck content |
 
-> **Note on git authorship.** The repository's commit log appears under a single git identity (`avinmaster`) because Abdugaffor pairs from the team lead's secondary workstation, which carries the same Claude Code + git configuration. Authorship in git reflects machine identity, not effort split; the role table above is the accurate division of work.
+> **Note on git authorship.** The repository's commit log shows a single git identity (`avinmaster`) because code authorship is funnelled through the team lead's machine for repo hygiene: Abdugaffor pairs from the lead's secondary workstation (which carries the same Claude Code + git configuration), and the lead pushes for any teammate whose contribution touches the repo (e.g., Samandar's pitch-deck markdown). Contributions that aren't code don't surface in `git log` at all — Gameel's pitch video is an out-of-repo artifact (linked from the README), and Lee Yih Shen's QA and orchestration work produces test runs, decision-log reviews, and approvals rather than commits. The role table above is the accurate division of work.
 
 ### 10.3 Development timeline
 

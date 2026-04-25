@@ -231,9 +231,9 @@ META = {
         doc_kind="PRD · Product Requirements",
     ),
     "sad": dict(
-        cover_title='<em>Software</em><br>Architecture.',
+        cover_title='<em>System</em><br>Analysis.',
         cover_sub="The shipped system: surfaces, components, runtime data flows, and the audit substrate behind every GLM decision.",
-        doc_kind="SAD · Software Architecture",
+        doc_kind="SAD · System Analysis",
     ),
     "tad": dict(
         cover_title='<em>Technical</em><br>Architecture.',
