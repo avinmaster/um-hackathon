@@ -74,10 +74,25 @@ class GLMClient:
     def __init__(self, settings: Settings | None = None, sink: DecisionSink | None = None) -> None:
         self.settings = settings or get_settings()
         self.sink = sink
-        self._openai = OpenAI(
-            api_key=self.settings.glm_api_key,
-            base_url=self.settings.glm_base_url,
-        )
+
+        provider = (self.settings.ai_provider or "glm").lower()
+        if provider == "openai":
+            if not self.settings.openai_api_key:
+                raise RuntimeError("AI_MODEL=openai but OPENAI_API_KEY is not set")
+            api_key = self.settings.openai_api_key
+            base_url = self.settings.openai_base_url
+            self._model = self.settings.openai_model
+            # OpenAI rejects `reasoning_effort` on non-reasoning models (e.g. gpt-4o).
+            self._supports_reasoning_effort = self._model.startswith(("o1", "o3", "o4"))
+        else:
+            if not self.settings.glm_api_key:
+                raise RuntimeError("AI_MODEL=glm but GLM_API_KEY is not set")
+            api_key = self.settings.glm_api_key
+            base_url = self.settings.glm_base_url
+            self._model = self.settings.glm_model
+            self._supports_reasoning_effort = True
+
+        self._openai = OpenAI(api_key=api_key, base_url=base_url)
 
     # -------- public helpers ----------------------------------------------
 
@@ -197,13 +212,13 @@ class GLMClient:
         max_retries: int = 4,
     ) -> ChatCompletion:
         request_body: dict[str, Any] = {
-            "model": self.settings.glm_model,
+            "model": self._model,
             "messages": messages,
             "temperature": temperature,
         }
         if max_tokens:
             request_body["max_tokens"] = max_tokens
-        if reasoning_effort:
+        if reasoning_effort and self._supports_reasoning_effort:
             request_body["reasoning_effort"] = reasoning_effort
         if response_format:
             request_body["response_format"] = response_format

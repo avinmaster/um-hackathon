@@ -18,9 +18,15 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    glm_api_key: str = Field(..., alias="GLM_API_KEY")
+    ai_provider: str = Field("glm", alias="AI_MODEL")
+
+    glm_api_key: str | None = Field(None, alias="GLM_API_KEY")
     glm_base_url: str = Field("https://api.ilmu.ai/v1", alias="GLM_BASE_URL")
     glm_model: str = Field("ilmu-glm-5.1", alias="GLM_MODEL")
+
+    openai_api_key: str | None = Field(None, alias="OPENAI_API_KEY")
+    openai_base_url: str = Field("https://api.openai.com/v1", alias="OPENAI_BASE_URL")
+    openai_model: str = Field("gpt-4o-mini", alias="OPENAI_MODEL")
 
     database_url: str = Field(
         f"sqlite:///{REPO_ROOT / 'var' / 'dev.sqlite'}",
