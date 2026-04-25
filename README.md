@@ -2,7 +2,7 @@
 
 > AI-driven building onboarding platform. GLM reasons. Humans review. Cities scale by config.
 
-**Pitch video:** _[paste link here before submission]_
+**Pitch video:** [Watch on YouTube](https://www.youtube.com/watch?v=33C4jHZC8_M)
 
 Submission for **UMHackathon 2026 — Domain 1: AI Systems & Agentic Workflow Automation**.
 
@@ -21,7 +21,7 @@ Workflow templates are JSON in Postgres, compiled per run into a LangGraph `Stat
 | Document | File |
 |---|---|
 | Product Requirements (PRD) | [docs/submit/prd.pdf](docs/submit/prd.pdf) |
-| Software Architecture (SAD) | [docs/submit/sad.pdf](docs/submit/sad.pdf) |
+| System Analysis (SAD) | [docs/submit/sad.pdf](docs/submit/sad.pdf) |
 | Technical Architecture (TAD) | [docs/submit/tad.pdf](docs/submit/tad.pdf) |
 | Quality Assurance & Test (QATD) | [docs/submit/qatd.pdf](docs/submit/qatd.pdf) |
 | Pitch Deck | [docs/submit/pitch-deck.pdf](docs/submit/pitch-deck.pdf) |
