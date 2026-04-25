@@ -230,6 +230,62 @@ Long-lived streams are SSE (GET for visitor / run-progress; POST-via-fetch for a
 
 **Deployability.** A single Render Blueprint (`render.yaml`) provisions the backend service and a managed Postgres 16 instance; the frontend deploys to Vercel as a static Next.js app. No bespoke infrastructure.
 
+## 10. Project Timeline & Team Collaboration
+
+### 10.1 Planning artifact
+
+Project planning lived in `tasks.md` at the repository root, in preference to a SaaS task board (Linear / Trello / Jira). The trade-off was deliberate:
+
+- **Single source of context for AI-assisted work.** Claude Code reads in-repo markdown natively; an external board would have required MCP wiring or context-paste at every session and fragmented planning between two systems.
+- **Audit trail via git.** Every change to the plan is captured by `git log`; a SaaS board adds another silo to consult and reconcile.
+- **Travels with the codebase.** Cloning the repository is sufficient to onboard a teammate or a reviewer — nothing lives behind a separate login.
+- **Zero account-provisioning overhead** for a five-person student team working under a hard deadline.
+
+The plan is structured as three waves (foundation → parallel features → polish), with eleven task IDs (T1–T11) and an explicit dispatch graph. See `tasks.md` at the repo root for the working copy.
+
+### 10.2 Team & responsibilities
+
+| Member | Role | Scope |
+|---|---|---|
+| Oybek Odilov | Team lead, architect, lead engineer | Full backend, GLM integration, system design, initial product framing |
+| Abdugaffor Odilov | Frontend & documentation | UI components, document drafts, PDF rendering |
+| Al-Bazeli Gameel Abduljalil | Pitch video | Recording, editing, demo footage |
+| Lee Yih Shen | Orchestration & quality assurance | Work coordination, test coverage, review cycles |
+| Samandar Erkinjonov | Product & presentation | Product narrative, pitch deck content |
+
+> **Note on git authorship.** The repository's commit log appears under a single git identity (`avinmaster`) because Abdugaffor pairs from the team lead's secondary workstation, which carries the same Claude Code + git configuration. Authorship in git reflects machine identity, not effort split; the role table above is the accurate division of work.
+
+### 10.3 Development timeline
+
+The preliminary-round build window ran **2026-04-24 → 2026-04-26 (UTC+8)**, captured by twenty-two commits in chronological order:
+
+```
+2026-04-24  Initial commit
+2026-04-24  Initial commit                       (repo bootstrap)
+2026-04-25  Finished MVP
+2026-04-25  docs: add frontend redesign spec
+2026-04-25  frontend: full redesign — Warp/Vercel-style dark theme + motion
+2026-04-25  frontend: fix exterior 3D, dial back gradients, harden chat rendering
+2026-04-25  Finish layout and redesign
+2026-04-25  Change texts to the more intuitive
+2026-04-25  Fix [object Object]
+2026-04-25  Wire backend for Vercel + Render + Neon deploy
+2026-04-25  Collapse deploy to a single Render Blueprint
+2026-04-25  Skip corepack on Render — pnpm signing key verify breaks the build
+2026-04-25  Drop pnpm-workspace.yaml — frontend is a single package, not a workspace
+2026-04-25  Tighten admin assistant prompts to emit clean block markdown
+2026-04-25  Correct submitting moments
+2026-04-25  Add AI_MODEL switch to route between GLM and OpenAI
+2026-04-25  Fall back to index when StepForm field name is missing
+2026-04-26  Add reseed script that drops/recreates tables instead of nuking the SQLite file
+2026-04-26  Fix onboarding
+2026-04-26  Finish fixes on prompts
+2026-04-26  Rewrite submit docs
+2026-04-26  Finish submit docs
+```
+
+The cadence is intentionally compressed: the team built on top of a pre-architected plan held in `tasks.md`, with integration risk front-loaded into Wave 0 (T1–T4) and parallel feature work driving the bulk of day two. Wave 2 polish (deploy hardening, onboarding fixes, prompt tightening, doc rendering) runs through the final day.
+
 ---
 
 *See the TAD for technology-selection rationale and the QATD for the test strategy.*
