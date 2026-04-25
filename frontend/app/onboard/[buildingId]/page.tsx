@@ -29,6 +29,7 @@ export default function OnboardRunPage({
   const [graph, setGraph] = useState<GraphOut | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -184,6 +185,7 @@ export default function OnboardRunPage({
                 graph={graph}
                 current={picked}
                 onPickStep={setPicked}
+                processing={processing}
               />
             ) : error ? (
               <div className="grid h-full place-items-center p-6 text-center text-sm text-[var(--color-ink-muted)]">
@@ -223,6 +225,8 @@ export default function OnboardRunPage({
                   setPicked(id);
                 }}
                 cancelEdit={() => setEditingStepId(null)}
+                processing={processing}
+                setProcessing={setProcessing}
               />
             )}
             {!run && !error && (

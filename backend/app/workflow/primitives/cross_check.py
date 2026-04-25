@@ -34,6 +34,27 @@ def cross_check_factory(step: dict[str, Any]) -> Callable[[RunState], dict[str, 
         step_outputs = state.get("step_outputs") or {}
         scope = {sid: step_outputs.get(sid) for sid in compare if sid in step_outputs}
 
+        # The extraction layer only captures fields that each step's
+        # `extract_fields` config asked for, so common facts like floor
+        # count or unit count silently vanish if they weren't requested.
+        # Send the raw document text alongside extracted outputs so the
+        # model can spot mismatches on any field a document mentions.
+        uploaded_docs = state.get("uploaded_docs") or []
+        compare_set = set(compare)
+        doc_texts: list[str] = []
+        for d in uploaded_docs:
+            if d.get("step_id") not in compare_set:
+                continue
+            text = (d.get("text") or "").strip()
+            if not text:
+                continue
+            doc_texts.append(
+                f"--- {d.get('filename') or d.get('id')} "
+                f"(step={d.get('step_id')}, doc_type={d.get('doc_type')}) ---\n"
+                f"{text[:4000]}"
+            )
+        docs_block = "\n\n".join(doc_texts)[:24000]
+
         decisions: list[dict] = []
 
         def sink(d):
@@ -48,8 +69,15 @@ def cross_check_factory(step: dict[str, Any]) -> Callable[[RunState], dict[str, 
                 {
                     "role": "user",
                     "content": (
-                        "Compare the following step outputs. Return contradictions only.\n\n"
-                        f"{json.dumps(scope, indent=2, default=str)[:30000]}"
+                        "Compare the form values in `basics` (and any other "
+                        "form steps) against what the uploaded documents "
+                        "actually say. Use both the extracted step outputs "
+                        "and the raw document text. Return contradictions "
+                        "only.\n\n"
+                        "=== Step outputs (extracted) ===\n"
+                        f"{json.dumps(scope, indent=2, default=str)[:8000]}\n\n"
+                        "=== Uploaded document text (authoritative) ===\n"
+                        f"{docs_block or '(no document text available)'}"
                     ),
                 },
             ],

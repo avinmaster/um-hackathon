@@ -49,6 +49,8 @@ type Props = {
   editingStepId?: string | null;
   startEdit?: (stepId: string) => void;
   cancelEdit?: () => void;
+  processing?: boolean;
+  setProcessing?: (b: boolean) => void;
 };
 
 export function StepPanel({
@@ -60,6 +62,8 @@ export function StepPanel({
   editingStepId,
   startEdit,
   cancelEdit,
+  processing,
+  setProcessing,
 }: Props) {
   if (!step) {
     return (
@@ -99,24 +103,36 @@ export function StepPanel({
             {step.id}
           </div>
         </div>
-        {canEdit && startEdit && (
-          <button
-            type="button"
-            onClick={() => startEdit(step.id)}
-            className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-ink-muted)] transition-colors hover:border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))] hover:text-[var(--color-primary-glow)]"
-          >
-            <Undo2 className="h-3 w-3" />
-            {editLabel}
-          </button>
-        )}
-        {isEditing && cancelEdit && (
-          <button
-            type="button"
-            onClick={cancelEdit}
-            className="shrink-0 inline-flex items-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
-          >
-            Cancel edit
-          </button>
+        {processing ? (
+          <span className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-ink-muted)]">
+            <span className="relative inline-flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-primary)] opacity-60 pulse-dot" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+            </span>
+            Processing…
+          </span>
+        ) : (
+          <>
+            {canEdit && startEdit && (
+              <button
+                type="button"
+                onClick={() => startEdit(step.id)}
+                className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-ink-muted)] transition-colors hover:border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))] hover:text-[var(--color-primary-glow)]"
+              >
+                <Undo2 className="h-3 w-3" />
+                {editLabel}
+              </button>
+            )}
+            {isEditing && cancelEdit && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="shrink-0 inline-flex items-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+              >
+                Cancel edit
+              </button>
+            )}
+          </>
         )}
       </header>
 
@@ -138,6 +154,7 @@ export function StepPanel({
               editingStepId={editingStepId ?? null}
               startEdit={startEdit}
               cancelEdit={cancelEdit}
+              setProcessing={setProcessing}
             />
           </motion.div>
         </AnimatePresence>
@@ -155,6 +172,7 @@ function PrimitiveBody({
   editingStepId,
   startEdit,
   cancelEdit,
+  setProcessing,
 }: {
   step: TemplateStep;
   steps?: TemplateStep[];
@@ -164,6 +182,7 @@ function PrimitiveBody({
   editingStepId: string | null;
   startEdit?: (stepId: string) => void;
   cancelEdit?: () => void;
+  setProcessing?: (b: boolean) => void;
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -383,6 +402,7 @@ function PrimitiveBody({
                 setSubmitting={setSubmitting}
                 setError={setError}
                 onChange={onChange}
+                setProcessing={setProcessing}
               />
             </div>
           </div>
@@ -702,15 +722,18 @@ function AutoFixButton({
   setSubmitting,
   setError,
   onChange,
+  setProcessing,
 }: {
   buildingId: string;
   submitting: boolean;
   setSubmitting: (b: boolean) => void;
   setError: (s: string | null) => void;
   onChange: (next: RunState) => void;
+  setProcessing?: (b: boolean) => void;
 }) {
   const click = async () => {
     setSubmitting(true);
+    setProcessing?.(true);
     setError(null);
     try {
       const next = await api.autoFix(buildingId);
@@ -719,6 +742,7 @@ function AutoFixButton({
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setSubmitting(false);
+      setProcessing?.(false);
     }
   };
 

@@ -62,6 +62,7 @@ export type StepNodeData = {
   status: StepStatus;
   index: number;
   total: number;
+  isProcessing?: boolean;
   onClick?: () => void;
 };
 
@@ -74,6 +75,10 @@ export function StepNode({
 }) {
   const Icon = primitiveIcons[data.primitive];
   const isActive = data.status === "running" || data.status === "awaiting_user";
+  // During a global re-evaluation (e.g. Auto-fix), every node that isn't
+  // the current paused/active one shows a subtle pulsing skeleton tint so
+  // the owner can see "stuff is happening across the run."
+  const showProcessing = Boolean(data.isProcessing) && !isActive;
   return (
     <div
       onClick={data.onClick}
@@ -81,6 +86,7 @@ export function StepNode({
         "group relative w-[280px] cursor-pointer rounded-[var(--r-lg)] border bg-[var(--color-bg-elev)] transition-all duration-200 ease-out",
         statusBorder[data.status],
         isActive && "shadow-[var(--shadow-lift-md)]",
+        showProcessing && "animate-pulse opacity-70",
         selected &&
           "ring-1 ring-[var(--color-primary)] ring-offset-2 ring-offset-[var(--color-bg)]",
       )}

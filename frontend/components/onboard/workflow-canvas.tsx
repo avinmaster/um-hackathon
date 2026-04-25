@@ -58,14 +58,21 @@ export function WorkflowCanvas({
   graph,
   current,
   onPickStep,
+  processing,
 }: {
   graph: GraphOut;
   current: string | null;
   onPickStep: (id: string) => void;
+  processing?: boolean;
 }) {
   return (
     <ReactFlowProvider>
-      <Inner graph={graph} current={current} onPickStep={onPickStep} />
+      <Inner
+        graph={graph}
+        current={current}
+        onPickStep={onPickStep}
+        processing={processing}
+      />
     </ReactFlowProvider>
   );
 }
@@ -74,10 +81,12 @@ function Inner({
   graph,
   current,
   onPickStep,
+  processing,
 }: {
   graph: GraphOut;
   current: string | null;
   onPickStep: (id: string) => void;
+  processing?: boolean;
 }) {
   const flow = useReactFlow();
   const layout = useMemo(() => autoLayout(graph.nodes), [graph]);
@@ -95,6 +104,7 @@ function Inner({
           status: n.status,
           index: i,
           total: graph.nodes.length,
+          isProcessing: Boolean(processing),
           onClick: () => onPickStep(n.id),
         },
         draggable: true,
@@ -124,6 +134,7 @@ function Inner({
             status: n.status,
             index: i,
             total: graph.nodes.length,
+            isProcessing: Boolean(processing),
             onClick: () => onPickStep(n.id),
           },
           draggable: true,
@@ -132,7 +143,7 @@ function Inner({
         };
       });
     });
-  }, [graph, layout, current, onPickStep]);
+  }, [graph, layout, current, onPickStep, processing]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<Node<StepNodeData>>[]) => {

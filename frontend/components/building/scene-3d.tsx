@@ -11,7 +11,6 @@
  */
 import {
   Environment,
-  Float,
   Html,
   OrbitControls,
   useGLTF,
@@ -33,14 +32,24 @@ export type SceneConfig = {
 
 export type SceneMode = "exterior" | "interior";
 
-const EXTERIOR_MODELS = [
+// Exterior pool is split by aspect ratio so a 20-floor tower doesn't get
+// rendered as a townhouse. The pool is chosen at runtime from
+// sceneConfig.floors against HIGH_RISE_FLOOR_THRESHOLD.
+const HIGH_RISE_MODELS = [
   "/models/apartment-google-building.glb",
-  "/models/apartment-dook-2.glb",
-  "/models/apartment-google.glb",
-  "/models/building-quaternius-townhouse.glb",
   "/models/building-lousberg.glb",
   "/models/building-kenney-large.glb",
 ] as const;
+
+const LOW_RISE_MODELS = [
+  "/models/apartment-dook-2.glb",
+  "/models/apartment-google.glb",
+  "/models/building-quaternius-townhouse.glb",
+] as const;
+
+const EXTERIOR_MODELS = [...HIGH_RISE_MODELS, ...LOW_RISE_MODELS] as const;
+
+const HIGH_RISE_FLOOR_THRESHOLD = 6;
 
 const INTERIOR_MODELS = [
   "/models/interior-livingroom-safayan.glb",
@@ -85,10 +94,13 @@ export function Scene3D({
   mode?: SceneMode;
   onModeChange?: (m: SceneMode) => void;
 }) {
-  const exteriorUrl = useMemo(
-    () => pickModel(buildingId, EXTERIOR_MODELS),
-    [buildingId],
-  );
+  const exteriorUrl = useMemo(() => {
+    const pool =
+      sceneConfig.floors >= HIGH_RISE_FLOOR_THRESHOLD
+        ? HIGH_RISE_MODELS
+        : LOW_RISE_MODELS;
+    return pickModel(buildingId, pool);
+  }, [buildingId, sceneConfig.floors]);
   const interiorUrl = useMemo(
     () => pickModel(buildingId, INTERIOR_MODELS),
     [buildingId],
@@ -125,7 +137,6 @@ export function Scene3D({
             <>
               <NormalisedModel url={exteriorUrl} fitTo={6} />
               <Ground />
-              <FloorIndicators floors={sceneConfig.floors} />
               <StatCard
                 floors={sceneConfig.floors}
                 unitCount={sceneConfig.unit_count}
@@ -217,10 +228,16 @@ function NormalisedModel({ url, fitTo }: { url: string; fitTo: number }) {
     const box = new THREE.Box3().setFromObject(cloned);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    cloned.position.sub(center);
-    cloned.position.y -= box.min.y - center.y;
     const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    cloned.scale.setScalar(fitTo / maxDim);
+    const scale = fitTo / maxDim;
+    // Scale first, then place the group so the model's centerline sits at
+    // x=0,z=0 and its base at y=0. The group's `position` lives in the parent
+    // coordinate space and is *not* affected by the group's own `scale`, so
+    // the offset has to be pre-multiplied by `scale` — otherwise models whose
+    // raw vertices are far from the origin (some glTF exports use real-world
+    // coords in the millions) end up translated millions of units offscreen.
+    cloned.scale.setScalar(scale);
+    cloned.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
     cloned.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh) {
         const m = obj as THREE.Mesh;
@@ -239,26 +256,6 @@ function Ground() {
       <circleGeometry args={[14, 64]} />
       <meshStandardMaterial color="#0c0d11" metalness={0.3} roughness={0.85} />
     </mesh>
-  );
-}
-
-function FloorIndicators({ floors }: { floors: number }) {
-  const n = Math.max(1, Math.min(30, Math.round(floors)));
-  return (
-    <group position={[3.6, 0, 0]}>
-      {Array.from({ length: n }).map((_, i) => (
-        <Float key={i} speed={0.8} rotationIntensity={0.2} floatIntensity={0.2}>
-          <mesh position={[0, 0.4 + i * 0.22, 0]}>
-            <sphereGeometry args={[0.045, 12, 12]} />
-            <meshStandardMaterial
-              color="#ff6b3d"
-              emissive="#ff6b3d"
-              emissiveIntensity={0.7}
-            />
-          </mesh>
-        </Float>
-      ))}
-    </group>
   );
 }
 
