@@ -1,4 +1,5 @@
 "use client";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { api, type RunState, type TemplateStep } from "../../lib/api";
@@ -26,25 +27,42 @@ export function StepPanel({ buildingId, run, step, onChange }: Props) {
   }
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center gap-3 border-b border-[var(--color-border)] p-5">
+      <header className="sticky top-0 z-10 flex items-start gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg-elev)]/95 p-5 backdrop-blur">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] text-[var(--color-primary-glow)]">
+          <span className="font-mono text-xs">
+            {primitiveLabel[step.primitive].slice(0, 2)}
+          </span>
+        </div>
         <div className="min-w-0">
-          <div className="text-xs font-medium uppercase tracking-widest text-[var(--color-accent)]">
+          <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--color-primary-glow)]">
             {primitiveLabel[step.primitive]}
           </div>
-          <h2 className="mt-0.5 text-lg font-semibold truncate">{step.title}</h2>
-          <div className="text-xs text-[var(--color-ink-subtle)] font-mono mt-0.5">
+          <h2 className="mt-0.5 truncate text-lg font-semibold tracking-tight">
+            {step.title}
+          </h2>
+          <div className="mt-0.5 font-mono text-[10px] text-[var(--color-ink-subtle)]">
             {step.id}
           </div>
         </div>
       </header>
 
       <div className="flex-1 overflow-y-auto p-5">
-        <PrimitiveBody
-          step={step}
-          run={run}
-          buildingId={buildingId}
-          onChange={onChange}
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step.id}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <PrimitiveBody
+              step={step}
+              run={run}
+              buildingId={buildingId}
+              onChange={onChange}
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -101,7 +119,6 @@ function PrimitiveBody({
     );
   }, [run.state.verification_results, step.id]);
 
-  // ---- per-primitive UI ----
   if (step.primitive === "collect_form") {
     const cfg = (step.config || {}) as { fields?: Array<Record<string, unknown>> };
     const fields = cfg.fields || [];
@@ -109,13 +126,13 @@ function PrimitiveBody({
     return (
       <div className="space-y-4">
         {alreadyDone ? (
-          <div className="rounded-md border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] p-3 text-sm">
+          <SuccessBlock>
             <CheckCircle2 className="inline h-4 w-4 text-[var(--color-accent)] mr-2" />
             Submitted — form data is on the next steps.
             <pre className="mt-2 text-xs font-mono text-[var(--color-ink-muted)] whitespace-pre-wrap">
               {JSON.stringify(stepOutput, null, 2)}
             </pre>
-          </div>
+          </SuccessBlock>
         ) : null}
         {isActive && (
           <StepForm
@@ -137,15 +154,15 @@ function PrimitiveBody({
     return (
       <div className="space-y-4">
         {cfg.criteria && (
-          <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elev)] p-4">
-            <div className="text-xs font-medium uppercase tracking-widest text-[var(--color-ink-subtle)] mb-2">
+          <div className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
+            <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--color-ink-subtle)] mb-2">
               Verification criteria
             </div>
             <ul className="space-y-1.5 text-sm">
               {cfg.criteria.map((c, i) => (
                 <li key={i} className="flex gap-2">
-                  <span className="text-[var(--color-ink-subtle)] font-mono">
-                    {i + 1}.
+                  <span className="text-[var(--color-primary-glow)] font-mono">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>{c}</span>
                 </li>
@@ -185,10 +202,10 @@ function PrimitiveBody({
     return (
       <div className="space-y-4">
         {contradictions.length === 0 && resolved && (
-          <div className="rounded-md border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] p-3 text-sm">
+          <SuccessBlock>
             <CheckCircle2 className="inline h-4 w-4 text-[var(--color-accent)] mr-2" />
             No contradictions detected across your documents.
-          </div>
+          </SuccessBlock>
         )}
         {contradictions.length > 0 && (
           <div className="space-y-2">
@@ -215,16 +232,16 @@ function PrimitiveBody({
     return (
       <div className="space-y-4">
         {summary ? (
-          <article className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elev)] p-4 text-sm leading-relaxed whitespace-pre-wrap">
+          <article className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-4 text-sm leading-relaxed whitespace-pre-wrap">
             {summary}
           </article>
         ) : (
-          <div className="rounded-md border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]">
+          <div className="rounded-[var(--r-md)] border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]">
             Summary will generate when this step is reached.
           </div>
         )}
         {gaps.length > 0 && (
-          <div className="rounded-md border border-[color-mix(in_srgb,var(--color-warn)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-warn)_10%,transparent)] p-3 text-sm">
+          <div className="rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--color-warn)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-warn)_10%,transparent)] p-3 text-sm">
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="h-4 w-4 text-[var(--color-warn)]" />
               <span className="font-medium">Gaps to resolve</span>
@@ -256,8 +273,8 @@ function PrimitiveBody({
         <div
           className={
             done
-              ? "rounded-md border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] p-4"
-              : "rounded-md border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]"
+              ? "rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] p-4"
+              : "rounded-[var(--r-md)] border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]"
           }
         >
           {done ? (
@@ -282,13 +299,24 @@ function PrimitiveBody({
   return null;
 }
 
+function SuccessBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] p-3 text-sm">
+      {children}
+    </div>
+  );
+}
+
 function VerdictCard({ verdict }: { verdict: Record<string, unknown> }) {
   const passed = Boolean(verdict["passed"]);
   const summary = String(verdict["summary"] || "");
   const reasons = (verdict["reasons"] as Array<Record<string, unknown>>) || [];
   return (
-    <div
-      className={`rounded-md border p-3 text-sm ${
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className={`rounded-[var(--r-md)] border p-3 text-sm ${
         passed
           ? "border-[color-mix(in_srgb,var(--color-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)]"
           : "border-[color-mix(in_srgb,var(--color-fail)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-fail)_10%,transparent)]"
@@ -300,7 +328,9 @@ function VerdictCard({ verdict }: { verdict: Record<string, unknown> }) {
         ) : (
           <XCircle className="h-4 w-4 text-[var(--color-fail)]" />
         )}
-        <span className="font-medium">{passed ? "Verification passed" : "Verification failed"}</span>
+        <span className="font-medium">
+          {passed ? "Verification passed" : "Verification failed"}
+        </span>
       </div>
       <div className="text-[var(--color-ink-muted)]">{summary}</div>
       {reasons.length > 0 && (
@@ -309,7 +339,9 @@ function VerdictCard({ verdict }: { verdict: Record<string, unknown> }) {
             const v = String(r["verdict"] || "");
             return (
               <li key={i} className="flex gap-2">
-                <Badge tone={v === "pass" ? "accent" : v === "fail" ? "fail" : "warn"}>{v}</Badge>
+                <Badge tone={v === "pass" ? "accent" : v === "fail" ? "fail" : "warn"}>
+                  {v}
+                </Badge>
                 <div className="min-w-0">
                   <div className="truncate">{String(r["criterion"])}</div>
                   {r["evidence"] ? (
@@ -323,7 +355,7 @@ function VerdictCard({ verdict }: { verdict: Record<string, unknown> }) {
           })}
         </ul>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -334,7 +366,12 @@ function ContradictionCard({ c }: { c: Record<string, unknown> }) {
   const values = (c["values"] as Array<Record<string, unknown>>) || [];
   const tone = severity === "major" ? "fail" : "warn";
   return (
-    <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elev)] p-3 text-sm">
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-sm"
+    >
       <div className="flex items-center gap-2 mb-1">
         <Badge tone={tone}>{severity}</Badge>
         <span className="font-medium">{field}</span>
@@ -349,6 +386,6 @@ function ContradictionCard({ c }: { c: Record<string, unknown> }) {
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

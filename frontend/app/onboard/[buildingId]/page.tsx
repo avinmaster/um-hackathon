@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { TopBar } from "../../../components/nav/topbar";
 import { WorkflowCanvas } from "../../../components/onboard/workflow-canvas";
 import { StepPanel } from "../../../components/onboard/step-panel";
+import { ProgressStrip } from "../../../components/onboard/progress-strip";
 import { Badge } from "../../../components/ui/badge";
 import {
   api,
@@ -39,7 +41,6 @@ export default function OnboardRunPage({
       setRun(r);
       setGraph(g);
       if (!picked) setPicked(g.current ?? g.nodes[0]?.id ?? null);
-      // Fetch template once.
       if (b && !template) {
         const ts = await api.listTemplates(b.city_id);
         const tpl =
@@ -56,8 +57,6 @@ export default function OnboardRunPage({
     void load();
   }, [load]);
 
-  // Light polling so the canvas stays fresh while a step is running (the
-  // upload endpoint is synchronous so this mostly handles resume).
   useEffect(() => {
     if (!run) return;
     if (run.status === "completed" || run.status === "failed") return;
@@ -89,16 +88,27 @@ export default function OnboardRunPage({
       <TopBar current="onboard" />
       <main className="flex min-h-0 flex-1 flex-col">
         <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)] px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 text-xs text-[var(--color-ink-subtle)]">
-                <Link href="/onboard" className="hover:text-[var(--color-ink)]">
+              <div className="flex items-center gap-1.5 text-[11px] text-[var(--color-ink-subtle)]">
+                <Link
+                  href="/onboard"
+                  className="hover:text-[var(--color-ink)] transition-colors"
+                >
                   onboarding
                 </Link>
-                <span>/</span>
+                <ChevronRight className="h-3 w-3" />
                 <span className="font-mono">{buildingId.slice(0, 8)}</span>
+                {pickedStep && (
+                  <>
+                    <ChevronRight className="h-3 w-3" />
+                    <span className="text-[var(--color-ink-muted)] truncate">
+                      {pickedStep.title}
+                    </span>
+                  </>
+                )}
               </div>
-              <h1 className="mt-1 truncate text-xl font-semibold">
+              <h1 className="mt-1 truncate text-xl font-semibold tracking-tight">
                 {building?.name || "Building"}
               </h1>
               <p className="text-xs text-[var(--color-ink-muted)]">
@@ -106,35 +116,30 @@ export default function OnboardRunPage({
               </p>
             </div>
             <div className="flex items-center gap-3">
-              {run && (
-                <Badge
-                  tone={
-                    run.status === "completed"
-                      ? "accent"
-                      : run.status === "awaiting_user"
-                        ? "warn"
-                        : run.status === "failed"
-                          ? "fail"
-                          : "info"
-                  }
-                >
-                  {run.status}
-                </Badge>
-              )}
+              {run && <RunPulse run={run} />}
               {building?.status === "published" && (
                 <Link
                   href={`/buildings/${building.id}`}
-                  className="rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-black hover:bg-[var(--color-accent-deep)] hover:text-[var(--color-ink)]"
+                  className="group inline-flex items-center gap-1.5 rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[var(--color-primary-glow)] hover:shadow-[var(--shadow-glow-violet)]"
                 >
-                  View public listing →
+                  View public listing
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               )}
             </div>
           </div>
         </div>
 
-        <div className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
-          <div className="relative h-[360px] lg:h-auto border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
+        {graph && (
+          <ProgressStrip
+            graph={graph}
+            current={picked}
+            onPickStep={setPicked}
+          />
+        )}
+
+        <div className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
+          <div className="relative h-[420px] lg:h-auto border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
             {graph ? (
               <WorkflowCanvas
                 graph={graph}
@@ -168,5 +173,31 @@ export default function OnboardRunPage({
         </div>
       </main>
     </>
+  );
+}
+
+function RunPulse({ run }: { run: RunState }) {
+  const tone =
+    run.status === "completed"
+      ? "accent"
+      : run.status === "awaiting_user"
+        ? "warn"
+        : run.status === "failed"
+          ? "fail"
+          : "brand";
+
+  return (
+    <div className="flex items-center gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2">
+      <Badge tone={tone}>
+        <span className="relative inline-flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 pulse-dot" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
+        </span>
+        {run.status}
+      </Badge>
+      <span className="font-mono text-[11px] text-[var(--color-ink-muted)]">
+        run · {run.run_id.slice(0, 8)}
+      </span>
+    </div>
   );
 }

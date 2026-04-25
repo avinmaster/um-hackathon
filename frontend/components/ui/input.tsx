@@ -9,7 +9,7 @@ export const Input = React.forwardRef<
     <input
       ref={ref}
       className={cn(
-        "h-10 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-accent)]",
+        "h-10 w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
         className,
       )}
       {...props}
@@ -25,7 +25,7 @@ export const Textarea = React.forwardRef<
     <textarea
       ref={ref}
       className={cn(
-        "w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-accent)]",
+        "w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
         className,
       )}
       {...props}

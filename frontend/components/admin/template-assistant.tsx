@@ -95,7 +95,7 @@ export function TemplateAssistant({
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--color-border)] p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <div className="grid h-7 w-7 place-items-center rounded-md bg-[color-mix(in_srgb,var(--color-accent)_20%,transparent)] text-[var(--color-accent)]">
+          <div className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-[color-mix(in_srgb,var(--color-primary)_30%,transparent)] to-[color-mix(in_srgb,var(--color-cyan)_25%,transparent)] text-[var(--color-primary-glow)]">
             <Wand2 className="h-3.5 w-3.5" />
           </div>
           <div>
@@ -112,7 +112,7 @@ export function TemplateAssistant({
           className="min-h-[88px] text-xs"
         />
         <div className="flex items-center justify-between">
-          <Badge tone="accent">GLM tool: draft_template</Badge>
+          <Badge tone="brand">GLM tool: draft_template</Badge>
           <Button size="sm" onClick={draft} disabled={drafting || !description.trim()}>
             {drafting ? "Drafting…" : "Generate"}
           </Button>
@@ -133,7 +133,7 @@ export function TemplateAssistant({
             className={cn(
               "max-w-[95%] rounded-lg px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap",
               m.role === "user"
-                ? "ml-auto bg-[var(--color-accent)] text-black"
+                ? "ml-auto bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-cyan)] text-white shadow-[var(--shadow-glow-violet)]"
                 : "bg-[var(--color-bg)] border border-[var(--color-border)]",
             )}
           >
@@ -152,7 +152,7 @@ export function TemplateAssistant({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Why do I need a cross-check step?"
-          className="h-10 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none focus:border-[var(--color-accent)]"
+          className="h-10 flex-1 rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-all focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
           disabled={streaming}
         />
         <Button type="submit" size="md" disabled={!input.trim() || streaming}>

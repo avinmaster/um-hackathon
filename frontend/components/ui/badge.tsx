@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "../../lib/cn";
 
-type Tone = "neutral" | "info" | "warn" | "fail" | "accent";
+type Tone = "neutral" | "info" | "warn" | "fail" | "accent" | "brand" | "cyan";
 
 const tones: Record<Tone, string> = {
   neutral:
@@ -11,6 +11,10 @@ const tones: Record<Tone, string> = {
   fail: "border-[color-mix(in_srgb,var(--color-fail)_40%,transparent)] bg-[color-mix(in_srgb,var(--color-fail)_15%,transparent)] text-[var(--color-fail)]",
   accent:
     "border-[color-mix(in_srgb,var(--color-accent)_40%,transparent)] bg-[color-mix(in_srgb,var(--color-accent)_15%,transparent)] text-[var(--color-accent)]",
+  brand:
+    "border-[color-mix(in_srgb,var(--color-primary)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-primary)_15%,transparent)] text-[var(--color-primary-glow)]",
+  cyan:
+    "border-[color-mix(in_srgb,var(--color-cyan)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-cyan)_15%,transparent)] text-[var(--color-cyan)]",
 };
 
 export function Badge({

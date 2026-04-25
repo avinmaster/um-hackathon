@@ -77,9 +77,9 @@ export function TemplateEditor({
           <div
             key={s.id}
             className={cn(
-              "rounded-lg border bg-[var(--color-bg-elev)] transition-colors",
+              "rounded-[var(--r-md)] border bg-[var(--color-bg-elev)] transition-all duration-200",
               open
-                ? "border-[var(--color-accent)]"
+                ? "border-[var(--color-primary)] shadow-[var(--shadow-glow-violet)]"
                 : "border-[var(--color-border)] hover:border-[var(--color-border-strong)]",
             )}
           >
@@ -132,7 +132,7 @@ export function TemplateEditor({
                       onChange={(e) =>
                         update(i, { primitive: e.target.value as TemplateStep["primitive"] })
                       }
-                      className="h-10 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none focus:border-[var(--color-accent)]"
+                      className="h-10 w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-all focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
                     >
                       {PRIMITIVES.map((p) => (
                         <option key={p} value={p}>

@@ -3,12 +3,15 @@ import { cn } from "../../lib/cn";
 
 export function Card({
   className,
+  hover = false,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & { hover?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elev)]",
+        "rounded-[var(--r-lg)] border border-[var(--color-border)] bg-[var(--color-bg-elev)] transition-all duration-200 ease-out",
+        hover &&
+          "hover:border-[var(--color-border-strong)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift-md)]",
         className,
       )}
       {...props}

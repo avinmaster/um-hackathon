@@ -51,7 +51,7 @@ export default function OnboardIndex() {
       <main className="mx-auto w-full max-w-[1400px] flex-1 px-6 py-10 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8">
         <section>
           <div className="mb-6">
-            <Badge tone="accent">Owner workspace</Badge>
+            <Badge tone="brand">Owner workspace</Badge>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">
               Start onboarding a new building
             </h1>
@@ -90,7 +90,7 @@ export default function OnboardIndex() {
                   id="bc"
                   value={form.city_id}
                   onChange={(e) => setForm({ ...form, city_id: e.target.value })}
-                  className="h-10 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none focus:border-[var(--color-accent)]"
+                  className="h-10 w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-all focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
                 >
                   {cities.map((c) => (
                     <option key={c.id} value={c.id}>

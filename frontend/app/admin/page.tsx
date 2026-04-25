@@ -40,7 +40,7 @@ export default function AdminIndex() {
       <TopBar current="admin" />
       <main className="mx-auto w-full max-w-[1400px] flex-1 px-6 py-10 grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8">
         <section>
-          <Badge tone="accent">Admin workspace</Badge>
+          <Badge tone="brand">Admin workspace</Badge>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Cities</h1>
           <p className="mt-2 text-[var(--color-ink-muted)]">
             Each city owns its own workflow template. Pick one to author — or

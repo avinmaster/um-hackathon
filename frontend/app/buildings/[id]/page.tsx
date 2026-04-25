@@ -2,13 +2,16 @@
 import { use, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { TopBar } from "../../../components/nav/topbar";
 import { AssistantChat } from "../../../components/building/assistant-chat";
 import { Badge } from "../../../components/ui/badge";
+import type { SceneMode } from "../../../components/building/scene-3d";
 import { api, type Building } from "../../../lib/api";
 
 const Scene3D = dynamic(
-  () => import("../../../components/building/scene-3d").then((m) => m.Scene3D),
+  () =>
+    import("../../../components/building/scene-3d").then((m) => m.Scene3D),
   { ssr: false, loading: () => <SceneSkeleton /> },
 );
 
@@ -20,6 +23,7 @@ export default function BuildingVisitorPage({
   const { id } = use(params);
   const [building, setBuilding] = useState<Building | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [mode, setMode] = useState<SceneMode>("exterior");
 
   useEffect(() => {
     void api
@@ -35,7 +39,10 @@ export default function BuildingVisitorPage({
         <main className="flex-1 grid place-items-center">
           <div className="text-center">
             <p className="text-[var(--color-fail)] mb-3">{err}</p>
-            <Link href="/buildings" className="text-[var(--color-ink-muted)] underline">
+            <Link
+              href="/buildings"
+              className="text-[var(--color-ink-muted)] underline hover:text-[var(--color-ink)]"
+            >
               ← back to directory
             </Link>
           </div>
@@ -71,9 +78,9 @@ export default function BuildingVisitorPage({
             <div>
               <Link
                 href="/buildings"
-                className="text-xs text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)]"
+                className="inline-flex items-center gap-1 text-xs text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)] transition-colors"
               >
-                ← directory
+                <ArrowLeft className="h-3 w-3" /> directory
               </Link>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight">
                 {building.name}
@@ -87,9 +94,14 @@ export default function BuildingVisitorPage({
         </div>
 
         <div className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[1.4fr_1fr]">
-          <div className="relative h-[460px] lg:h-auto border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
-            <Scene3D buildingId={building.id} sceneConfig={scene} />
-            <ProfileOverlay profile={profile} />
+          <div className="relative h-[480px] lg:h-auto border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
+            <Scene3D
+              buildingId={building.id}
+              sceneConfig={scene}
+              mode={mode}
+              onModeChange={setMode}
+            />
+            <ProfileOverlay profile={profile} mode={mode} />
           </div>
           <aside className="bg-[var(--color-bg-elev)] min-h-0 flex">
             <AssistantChat buildingId={building.id} />
@@ -100,21 +112,36 @@ export default function BuildingVisitorPage({
   );
 }
 
-function ProfileOverlay({ profile }: { profile: Record<string, unknown> }) {
+function ProfileOverlay({
+  profile,
+  mode,
+}: {
+  profile: Record<string, unknown>;
+  mode: SceneMode;
+}) {
   const entries = Object.entries(profile).filter(
     ([, v]) =>
-      v !== null && v !== "" && (typeof v !== "object" || (Array.isArray(v) && v.length > 0)),
+      v !== null &&
+      v !== "" &&
+      (typeof v !== "object" || (Array.isArray(v) && v.length > 0)),
   );
   if (!entries.length) return null;
   return (
-    <div className="absolute bottom-4 left-4 right-4 lg:right-auto max-w-xl rounded-lg border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_85%,transparent)] backdrop-blur px-4 py-3">
-      <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-subtle)] mb-2">
-        Profile facts · grounding the assistant
+    <div className="panel-glass absolute bottom-4 left-4 right-4 lg:right-auto max-w-xl rounded-[var(--r-md)] px-4 py-3">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-primary-glow)] font-mono">
+          profile · {mode}
+        </span>
+        <span className="text-[10px] text-[var(--color-ink-subtle)]">
+          grounding the assistant
+        </span>
       </div>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
         {entries.slice(0, 10).map(([k, v]) => (
           <div key={k} className="flex gap-2 min-w-0">
-            <dt className="text-[var(--color-ink-subtle)] font-mono shrink-0">{k}:</dt>
+            <dt className="text-[var(--color-ink-subtle)] font-mono shrink-0">
+              {k}:
+            </dt>
             <dd className="truncate text-[var(--color-ink)]">{prettyValue(v)}</dd>
           </div>
         ))}
