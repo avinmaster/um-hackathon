@@ -24,11 +24,27 @@ def _engine_kwargs(url: str) -> dict:
     return {"pool_pre_ping": True, "future": True}
 
 
+def _normalize_db_url(url: str) -> str:
+    """Coerce common Postgres URL shapes onto the psycopg v3 driver.
+
+    Neon, Render, and Heroku all hand out URLs with the bare ``postgres://``
+    or ``postgresql://`` scheme; SQLAlchemy then defaults to psycopg2 which
+    isn't installed. Rewrite to ``postgresql+psycopg://`` so the v3 driver
+    we actually depend on is used.
+    """
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://") :]
+    if url.startswith("postgresql://") and "+psycopg" not in url:
+        url = "postgresql+psycopg://" + url[len("postgresql://") :]
+    return url
+
+
 settings = get_settings()
 if settings.database_url.startswith("sqlite"):
     (REPO_ROOT / "var").mkdir(parents=True, exist_ok=True)
 
-engine = create_engine(settings.database_url, **_engine_kwargs(settings.database_url))
+_db_url = _normalize_db_url(settings.database_url)
+engine = create_engine(_db_url, **_engine_kwargs(_db_url))
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
 
 

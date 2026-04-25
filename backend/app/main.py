@@ -26,7 +26,8 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
+        allow_origins=settings.cors_origin_list,
+        allow_origin_regex=r"^https://([a-z0-9-]+\.)*vercel\.app$",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -36,6 +37,14 @@ def create_app() -> FastAPI:
     def _bootstrap() -> None:
         create_all()
         logger.info("DB ready at %s", settings.database_url)
+        if settings.seed_on_startup:
+            try:
+                from .seed.seed_demo import run as seed_run
+
+                seed_run()
+                logger.info("startup seed complete")
+            except Exception:
+                logger.exception("startup seed failed (continuing)")
 
     @app.get("/health")
     def health() -> dict:

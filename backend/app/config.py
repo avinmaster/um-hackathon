@@ -33,6 +33,16 @@ class Settings(BaseSettings):
     app_env: str = Field("dev", alias="APP_ENV")
     log_level: str = Field("INFO", alias="LOG_LEVEL")
 
+    cors_origins: str = Field(
+        "http://localhost:3000",
+        alias="CORS_ORIGINS",
+    )
+    seed_on_startup: bool = Field(False, alias="SEED_ON_STARTUP")
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
 
 @lru_cache
 def get_settings() -> Settings:
