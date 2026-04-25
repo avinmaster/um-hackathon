@@ -12,7 +12,17 @@ export function ClosingCTA() {
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(800px 400px at 50% 50%, rgba(139,92,246,0.12), transparent 70%)",
+            "radial-gradient(700px 360px at 50% 50%, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 70%)",
+        }}
+      />
+      {/* horizontal animated line — Warp signature */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 -z-10 w-px scan-x"
+        style={{
+          top: "50%",
+          background:
+            "linear-gradient(to bottom, transparent, color-mix(in srgb, var(--color-primary) 50%, transparent), transparent)",
         }}
       />
       <Reveal className="mx-auto flex max-w-[920px] flex-col items-center px-6 text-center">
@@ -34,7 +44,7 @@ export function ClosingCTA() {
         <div className="relative mt-10">
           <Link
             href="/admin"
-            className="group inline-flex items-center gap-3 rounded-md bg-[var(--color-primary)] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-glow)] hover:shadow-[var(--shadow-glow-violet)]"
+            className="group inline-flex items-center gap-3 rounded-md bg-[var(--color-primary)] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-deep)]"
           >
             Author your first template
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />

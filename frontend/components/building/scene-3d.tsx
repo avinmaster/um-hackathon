@@ -118,7 +118,7 @@ export function Scene3D({
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
         />
-        <directionalLight position={[-8, 4, -4]} intensity={0.4} color="#22d3ee" />
+        <directionalLight position={[-8, 4, -4]} intensity={0.4} color="#5da8ff" />
 
         <Suspense fallback={<LoadingCube />}>
           {mode === "exterior" ? (
@@ -144,18 +144,18 @@ export function Scene3D({
         <ControlsWithPreset preset={activePreset} mode={mode} />
       </Canvas>
 
-      {/* mode toggle (top-left) */}
-      <div className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-translucent)] p-0.5 text-xs font-medium backdrop-blur">
+      {/* mode toggle (top-left) — exterior ↔ interior */}
+      <div className="absolute left-3 top-3 inline-flex items-center gap-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-translucent)] p-0.5 text-xs font-medium backdrop-blur">
         <ModePill
           active={mode === "exterior"}
           onClick={() => onModeChange?.("exterior")}
-          label="Exterior"
+          label="Building"
           Icon={Boxes}
         />
         <ModePill
           active={mode === "interior"}
           onClick={() => onModeChange?.("interior")}
-          label="Interior"
+          label="Apartment"
           Icon={Bed}
         />
       </div>
@@ -169,7 +169,7 @@ export function Scene3D({
             className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1.5 transition-colors",
               presetId === p.id
-                ? "bg-[var(--color-bg-raised)] text-[var(--color-primary-glow)]"
+                ? "bg-[var(--color-bg-raised)] text-[var(--color-primary)]"
                 : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]",
             )}
             title={p.label}
@@ -251,8 +251,8 @@ function FloorIndicators({ floors }: { floors: number }) {
           <mesh position={[0, 0.4 + i * 0.22, 0]}>
             <sphereGeometry args={[0.045, 12, 12]} />
             <meshStandardMaterial
-              color="#22d3ee"
-              emissive="#22d3ee"
+              color="#ff6b3d"
+              emissive="#ff6b3d"
               emissiveIntensity={0.7}
             />
           </mesh>
@@ -295,7 +295,7 @@ function StatCard({
       >
         <div
           style={{
-            color: "#a78bfa",
+            color: "#ff8c63",
             marginBottom: 3,
             letterSpacing: "0.18em",
             textTransform: "uppercase",

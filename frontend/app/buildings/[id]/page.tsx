@@ -104,7 +104,7 @@ export default function BuildingVisitorPage({
             <ProfileOverlay profile={profile} mode={mode} />
           </div>
           <aside className="bg-[var(--color-bg-elev)] min-h-0 flex">
-            <AssistantChat buildingId={building.id} />
+            <AssistantChat buildingId={building.id} onSwitchView={setMode} />
           </aside>
         </div>
       </main>

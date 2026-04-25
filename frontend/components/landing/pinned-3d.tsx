@@ -125,13 +125,13 @@ export function Pinned3D() {
       aria-label="How the workflow runs"
     >
       <div className="sticky top-0 flex h-screen w-full items-stretch overflow-hidden">
-        {/* ambient gradient */}
+        {/* very subtle warm halo behind the model */}
         <div
           aria-hidden
           className="absolute inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(900px 600px at 50% 50%, rgba(139,92,246,0.10), transparent 70%)",
+              "radial-gradient(700px 460px at 50% 50%, color-mix(in srgb, var(--color-primary) 8%, transparent), transparent 70%)",
           }}
         />
 
@@ -164,12 +164,12 @@ export function Pinned3D() {
               <directionalLight
                 position={[-8, 4, -4]}
                 intensity={0.5}
-                color="#8b5cf6"
+                color="#ff6b3d"
               />
               <pointLight
                 position={[0, 6, 4]}
-                intensity={0.6}
-                color="#22d3ee"
+                intensity={0.5}
+                color="#5da8ff"
               />
               <Suspense fallback={null}>
                 <ScrollDrivenBuilding rotationY={rotation} cameraZ={cameraZ} />
@@ -214,14 +214,19 @@ function StepCard({
   step: (typeof STEPS)[number];
   progress: MotionValue<number>;
 }) {
+  // Input ranges must stay in [0, 1]: framer-motion forwards them as WAAPI
+  // keyframe offsets when scroll-driven acceleration is on, and the Web
+  // Animations API rejects offsets outside that interval.
+  const r0 = step.range[0];
+  const r1 = step.range[1];
   const opacity = useTransform(
     progress,
-    [step.range[0] - 0.06, step.range[0], step.range[1], step.range[1] + 0.06],
+    [Math.max(0, r0 - 0.06), r0, r1, Math.min(1, r1 + 0.06)],
     [0.25, 1, 1, 0.25],
   );
   const x = useTransform(
     progress,
-    [step.range[0] - 0.06, step.range[0]],
+    [Math.max(0, r0 - 0.06), r0],
     [-12, 0],
   );
   const Icon = step.icon;
@@ -334,7 +339,7 @@ function ScrollHalo({ intensity }: { intensity: MotionValue<number> }) {
       ref.current.intensity = 0.4 + intensity.get() * 1.6;
     }
   });
-  return <pointLight ref={ref} position={[0, 3, 5]} color="#22d3ee" />;
+  return <pointLight ref={ref} position={[0, 3, 5]} color="#ff6b3d" />;
 }
 
 useGLTF.preload(MODEL_URL);

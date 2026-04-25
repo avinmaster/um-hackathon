@@ -14,13 +14,24 @@ type Msg = {
 };
 
 const SUGGESTIONS = [
-  "What's on floor 3?",
+  "Show me inside",
+  "Back to the building exterior",
   "How many units are there?",
   "What amenities does this building have?",
-  "When was it built?",
 ];
 
-export function AssistantChat({ buildingId }: { buildingId: string }) {
+const INTERIOR_HINTS =
+  /\b(inside|interior|apartment|unit|room|floor plan|layout)\b/i;
+const EXTERIOR_HINTS =
+  /\b(outside|exterior|building|facade|street|outdoor)\b/i;
+
+export function AssistantChat({
+  buildingId,
+  onSwitchView,
+}: {
+  buildingId: string;
+  onSwitchView?: (mode: "exterior" | "interior") => void;
+}) {
   const [messages, setMessages] = useState<Msg[]>([
     {
       role: "assistant",
@@ -38,6 +49,15 @@ export function AssistantChat({ buildingId }: { buildingId: string }) {
     const trimmed = text.trim();
     if (!trimmed || streaming) return;
     lastUserPromptRef.current = trimmed;
+    // Side-effect: nudge the 3D view to match the user's question. We pick
+    // exterior when both hints are present (the question is comparative).
+    if (onSwitchView) {
+      if (INTERIOR_HINTS.test(trimmed) && !EXTERIOR_HINTS.test(trimmed)) {
+        onSwitchView("interior");
+      } else if (EXTERIOR_HINTS.test(trimmed)) {
+        onSwitchView("exterior");
+      }
+    }
     const next: Msg[] = [
       ...messages,
       { role: "user", content: trimmed },

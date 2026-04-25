@@ -7,14 +7,15 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-glow)] hover:shadow-[var(--shadow-glow-violet)] active:translate-y-px",
+    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-deep)] active:translate-y-px",
   secondary:
-    "bg-[var(--color-bg-raised)] text-[var(--color-ink)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary-glow)]",
+    "bg-[var(--color-bg-elev)] text-[var(--color-ink)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-raised)]",
   ghost:
     "bg-transparent text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-bg-elev)]",
   success:
-    "bg-[var(--color-accent)] text-black hover:bg-[var(--color-accent-deep)] hover:text-[var(--color-ink)]",
-  danger: "bg-[var(--color-fail)] text-black hover:brightness-110",
+    "bg-[var(--color-accent)] text-black hover:bg-[var(--color-accent-deep)] hover:text-white",
+  danger:
+    "bg-[var(--color-fail)] text-white hover:brightness-110",
 };
 
 const sizes: Record<Size, string> = {

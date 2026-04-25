@@ -13,14 +13,23 @@ export function Hero() {
     <section className="relative isolate flex min-h-[92vh] w-full items-center justify-center overflow-hidden">
       <GridLines variant="hero" />
 
-      {/* aurora blobs */}
+      {/* single soft halo behind the headline — coral, very subtle */}
       <div
         aria-hidden
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(900px 600px at 30% 20%, rgba(139,92,246,0.18), transparent 70%)," +
-            "radial-gradient(700px 500px at 75% 70%, rgba(34,211,238,0.14), transparent 70%)",
+            "radial-gradient(700px 420px at 50% 35%, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 70%)",
+        }}
+      />
+      {/* one slow scan line for a Warp-like vibe */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -z-10 h-px scan-y"
+        style={{
+          top: 0,
+          background:
+            "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-primary) 55%, transparent), transparent)",
         }}
       />
 
@@ -47,7 +56,7 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.05 }}
           className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[var(--color-ink-subtle)]"
         >
-          <Sparkles className="h-3.5 w-3.5 text-[var(--color-primary-glow)]" />
+          <Sparkles className="h-3.5 w-3.5 text-[var(--color-primary)]" />
           UMHackathon 2026 · Domain 1 · Agentic workflows
         </motion.div>
 
@@ -86,7 +95,7 @@ export function Hero() {
         >
           <Link
             href="/admin"
-            className="group inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-glow)] hover:shadow-[var(--shadow-glow-violet)]"
+            className="group inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-deep)]"
           >
             Author a template
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />

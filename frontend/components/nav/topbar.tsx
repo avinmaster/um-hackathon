@@ -2,13 +2,23 @@
 import Link from "next/link";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Boxes, FileEdit, Layers, Moon, Sun } from "lucide-react";
 import { cn } from "../../lib/cn";
 
-export function TopBar({
-  current,
-}: {
-  current?: "admin" | "onboard" | "buildings";
-}) {
+type Section = "admin" | "onboard" | "buildings";
+
+const NAV: Array<{
+  href: string;
+  label: string;
+  key: Section;
+  icon: typeof Layers;
+}> = [
+  { href: "/admin", label: "Author", key: "admin", icon: FileEdit },
+  { href: "/onboard", label: "Onboard", key: "onboard", icon: Layers },
+  { href: "/buildings", label: "Directory", key: "buildings", icon: Boxes },
+];
+
+export function TopBar({ current }: { current?: Section }) {
   const { scrollY, scrollYProgress } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -21,68 +31,145 @@ export function TopBar({
     mass: 0.4,
   });
 
-  const link = (href: string, label: string, key: typeof current) => {
-    const isActive = current === key;
-    return (
-      <Link
-        href={href}
-        className={cn(
-          "relative text-sm px-3 py-1.5 rounded-md transition-colors",
-          isActive
-            ? "text-[var(--color-ink)]"
-            : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]",
-        )}
-      >
-        {label}
-        {isActive && (
-          <motion.span
-            layoutId="topbar-active"
-            className="absolute inset-0 -z-10 rounded-md bg-[var(--color-bg-raised)]"
-            transition={{ type: "spring", stiffness: 500, damping: 38 }}
-          />
-        )}
-      </Link>
-    );
-  };
-
   return (
     <motion.header
       initial={false}
-      animate={{
-        height: scrolled ? 52 : 64,
-        backgroundColor: scrolled
-          ? "rgba(5, 5, 7, 0.85)"
-          : "rgba(5, 5, 7, 0.55)",
-      }}
+      animate={{ height: scrolled ? 52 : 60 }}
       transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-      className="sticky top-0 z-40 w-full border-b border-[var(--color-border)] backdrop-blur-md"
+      className={cn(
+        "sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors",
+        scrolled
+          ? "border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_88%,transparent)]"
+          : "border-transparent bg-[color-mix(in_srgb,var(--color-bg)_55%,transparent)]",
+      )}
     >
       <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="ring-brand h-7 w-7 rounded-md grid place-items-center text-[var(--color-primary-glow)] font-bold text-sm transition-transform duration-300 group-hover:rotate-[8deg]">
-            O
-          </div>
+        <Link href="/" className="group flex items-center gap-2.5">
+          <Logo />
           <div className="flex items-baseline gap-2">
             <span className="font-semibold tracking-tight">Opus Magnum</span>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-ink-subtle)] hidden sm:inline">
+            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-subtle)] sm:inline">
               adaptive onboarding
             </span>
           </div>
         </Link>
-        <nav className="flex items-center gap-1">
-          {link("/admin", "Admin", "admin")}
-          {link("/onboard", "Onboard", "onboard")}
-          {link("/buildings", "Directory", "buildings")}
+
+        <nav className="flex items-center gap-0.5">
+          {NAV.map((n) => (
+            <NavLink key={n.key} item={n} active={current === n.key} />
+          ))}
+          <span className="hairline-v mx-2 h-5" />
+          <ThemeToggle />
         </nav>
       </div>
-      {/* scroll progress underline */}
+
+      {/* scroll progress underline — single warm hairline */}
       <motion.div
-        className="absolute bottom-0 left-0 h-[2px] origin-left bg-[var(--color-primary)]"
-        style={{
-          width: "100%",
-          scaleX: progressX,
-        }}
+        className="absolute bottom-0 left-0 h-px origin-left bg-[var(--color-primary)]"
+        style={{ width: "100%", scaleX: progressX }}
       />
     </motion.header>
+  );
+}
+
+function Logo() {
+  return (
+    <span
+      aria-hidden
+      className="relative grid h-7 w-7 place-items-center rounded-md border border-[var(--color-border-strong)] bg-[var(--color-bg-elev)] text-[var(--color-primary)] transition-transform duration-300 group-hover:rotate-[10deg]"
+    >
+      <span
+        className="absolute inset-0 rounded-md opacity-50"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, color-mix(in srgb, var(--color-primary) 28%, transparent), transparent 70%)",
+        }}
+      />
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path
+          d="M2 11 L7 2 L12 11"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M4.4 7.5 L9.6 7.5"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function NavLink({
+  item,
+  active,
+}: {
+  item: (typeof NAV)[number];
+  active: boolean;
+}) {
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      className={cn(
+        "relative inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+        active
+          ? "text-[var(--color-ink)]"
+          : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]",
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      {item.label}
+      {active && (
+        <motion.span
+          layoutId="topbar-active"
+          className="absolute inset-0 -z-10 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elev)]"
+          transition={{ type: "spring", stiffness: 500, damping: 38 }}
+        />
+      )}
+    </Link>
+  );
+}
+
+function ThemeToggle() {
+  // The no-flash <script> in app/layout.tsx already set data-theme before
+  // React mounts; we just read it on first render.
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof document === "undefined") return "dark";
+    return (
+      (document.documentElement.getAttribute("data-theme") as
+        | "dark"
+        | "light"
+        | null) ?? "dark"
+    );
+  });
+
+  const toggle = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      window.localStorage.setItem("om-theme", next);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      className="grid h-8 w-8 place-items-center rounded-md text-[var(--color-ink-muted)] transition-colors hover:bg-[var(--color-bg-elev)] hover:text-[var(--color-ink)]"
+    >
+      {theme === "dark" ? (
+        <Sun className="h-3.5 w-3.5" />
+      ) : (
+        <Moon className="h-3.5 w-3.5" />
+      )}
+    </button>
   );
 }

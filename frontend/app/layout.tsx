@@ -18,6 +18,14 @@ export const metadata: Metadata = {
     "AI-driven building onboarding workflows. GLM reasons, humans review, cities scale by config.",
 };
 
+const NO_FLASH_THEME = `
+(function(){try{
+  var s = localStorage.getItem('om-theme');
+  var t = s || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', t);
+}catch(e){}})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -25,7 +33,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_THEME }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

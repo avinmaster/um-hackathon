@@ -75,18 +75,24 @@ def assistant(
     ]
 
     def gen():
-        stream = client.complete(
-            messages=messages,
-            tool="visitor_assistant",
-            max_tokens=1024,
-            reasoning_effort="low",
-            stream=True,
-        )
-        for event in stream:  # type: ignore[union-attr]
-            if getattr(event, "choices", None) and event.choices:
-                delta = event.choices[0].delta
-                if delta and delta.content:
-                    yield f"data: {json.dumps({'content': delta.content})}\n\n"
+        try:
+            stream = client.complete(
+                messages=messages,
+                tool="visitor_assistant",
+                max_tokens=1024,
+                reasoning_effort="low",
+                stream=True,
+            )
+            for event in stream:  # type: ignore[union-attr]
+                if getattr(event, "choices", None) and event.choices:
+                    delta = event.choices[0].delta
+                    if delta and delta.content:
+                        yield f"data: {json.dumps({'content': delta.content})}\n\n"
+        except Exception as exc:  # noqa: BLE001 — surface upstream failures to the client
+            logger.warning("assistant stream failed: %s", exc)
+            payload = json.dumps({"message": f"{type(exc).__name__}: {exc}"})
+            yield f"event: error\ndata: {payload}\n\n"
+            return
         yield "event: end\ndata: {}\n\n"
 
     return StreamingResponse(gen(), media_type="text/event-stream")

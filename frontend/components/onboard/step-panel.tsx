@@ -1,7 +1,18 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  FileCheck,
+  FileInput,
+  GitCompare,
+  Image,
+  ScrollText,
+  UploadCloud,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 import { api, type RunState, type TemplateStep } from "../../lib/api";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -9,7 +20,16 @@ import { StepForm } from "./step-form";
 import { UploadPanel } from "./upload-panel";
 import { DecisionLog } from "./decision-log";
 import { Markdown } from "../ui/markdown";
-import { primitiveLabel } from "../status";
+import { primitiveLabel, type Primitive } from "../status";
+
+const PRIMITIVE_ICON: Record<Primitive, LucideIcon> = {
+  collect_form: FileInput,
+  upload_compliance: UploadCloud,
+  upload_content: Image,
+  cross_check: GitCompare,
+  human_review: ScrollText,
+  publish: FileCheck,
+};
 
 type Props = {
   buildingId: string;
@@ -29,13 +49,14 @@ export function StepPanel({ buildingId, run, step, onChange }: Props) {
   return (
     <div className="flex h-full flex-col">
       <header className="sticky top-0 z-10 flex items-start gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg-elev)]/95 p-5 backdrop-blur">
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)] text-[var(--color-primary-glow)]">
-          <span className="font-mono text-xs">
-            {primitiveLabel[step.primitive].slice(0, 2)}
-          </span>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-primary)]">
+          {(() => {
+            const Icon = PRIMITIVE_ICON[step.primitive];
+            return <Icon className="h-4 w-4" />;
+          })()}
         </div>
-        <div className="min-w-0">
-          <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--color-primary-glow)]">
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--color-primary)]">
             {primitiveLabel[step.primitive]}
           </div>
           <h2 className="mt-0.5 truncate text-lg font-semibold tracking-tight">

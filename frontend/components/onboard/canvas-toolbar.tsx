@@ -18,11 +18,11 @@ export function CanvasToolbar({
   className?: string;
 }) {
   const btn =
-    "grid h-8 w-8 place-items-center text-[var(--color-ink-muted)] hover:text-[var(--color-primary-glow)] hover:bg-[var(--color-bg-raised)] transition-colors";
+    "grid h-8 w-8 place-items-center text-[var(--color-ink-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-raised)] transition-colors";
   return (
     <div
       className={cn(
-        "panel-glass flex items-center divide-x divide-[var(--color-border)] overflow-hidden rounded-[var(--r-md)] shadow-[var(--shadow-lift-md)]",
+        "flex items-center divide-x divide-[var(--color-border)] overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elev)] shadow-[var(--shadow-lift-md)]",
         className,
       )}
     >

@@ -62,8 +62,7 @@ export function PrimitivesBento() {
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(900px 500px at 70% 30%, rgba(34,211,238,0.08), transparent 70%)," +
-            "radial-gradient(700px 400px at 20% 80%, rgba(139,92,246,0.08), transparent 70%)",
+            "radial-gradient(800px 380px at 70% 30%, color-mix(in srgb, var(--color-primary) 6%, transparent), transparent 70%)",
         }}
       />
       <Reveal stagger className="mx-auto flex max-w-[1400px] flex-col items-center">

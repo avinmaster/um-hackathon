@@ -26,8 +26,7 @@ export default async function BuildingsIndex() {
           className="absolute inset-x-0 top-0 -z-10 h-72"
           style={{
             background:
-              "radial-gradient(800px 300px at 30% 20%, rgba(139,92,246,0.10), transparent 70%)," +
-              "radial-gradient(700px 300px at 80% 40%, rgba(34,211,238,0.08), transparent 70%)",
+              "radial-gradient(800px 280px at 30% 20%, color-mix(in srgb, var(--color-primary) 7%, transparent), transparent 70%)",
           }}
         />
         <div className="mb-10 flex items-end justify-between gap-6">
@@ -61,7 +60,7 @@ export default async function BuildingsIndex() {
             </p>
             <Link
               href="/onboard"
-              className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[var(--color-primary-glow)] hover:shadow-[var(--shadow-glow-violet)]"
+              className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[var(--color-primary-deep)]"
             >
               Start onboarding
               <ArrowRight className="h-3.5 w-3.5" />
@@ -84,7 +83,7 @@ function BuildingCard({ b }: { b: Building }) {
   return (
     <Link
       href={`/buildings/${b.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-[var(--r-lg)] border border-[var(--color-border)] bg-[var(--color-bg-elev)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))] hover:shadow-[var(--shadow-glow-violet)]"
+      className="group relative flex flex-col overflow-hidden rounded-[var(--r-lg)] border border-[var(--color-border)] bg-[var(--color-bg-elev)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-lift-md)]"
     >
       <div className="relative h-44 overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg)] via-[var(--color-bg-elev)] to-[var(--color-bg)]">
         <IsoBuilding id={b.id} floors={sc?.floors ?? 6} />

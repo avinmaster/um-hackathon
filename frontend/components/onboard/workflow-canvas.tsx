@@ -19,25 +19,31 @@ import { CanvasToolbar } from "./canvas-toolbar";
 
 const nodeTypes = { step: StepNode };
 
-const NODE_W = 260;
-const NODE_H_GAP = 24;
-const NODE_V_GAP = 56;
+const NODE_W = 280;
+const NODE_H = 104;
+const COL_GAP = 140;
+const ROW_GAP = 56;
 
-function autoLayout(nodes: GraphOut["nodes"]): Record<string, { x: number; y: number }> {
-  // Vertical spine if ≤6, two-column zig-zag otherwise. Both keep nodes inside
-  // a column-ish area so the canvas doesn't sprawl horizontally.
+/**
+ * Auto-layout: a vertical spine for short workflows, a tidy two-column
+ * snake for longer ones. Tighter than before so fit-view doesn't have
+ * to zoom out and shrink the cards into illegibility.
+ */
+function autoLayout(
+  nodes: GraphOut["nodes"],
+): Record<string, { x: number; y: number }> {
   const positions: Record<string, { x: number; y: number }> = {};
   if (nodes.length <= 6) {
     nodes.forEach((n, i) => {
-      positions[n.id] = { x: 0, y: i * (96 + NODE_V_GAP) };
+      positions[n.id] = { x: 0, y: i * (NODE_H + ROW_GAP) };
     });
   } else {
     nodes.forEach((n, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
       positions[n.id] = {
-        x: col * (NODE_W + NODE_H_GAP),
-        y: row * (96 + NODE_V_GAP) + (col === 1 ? 60 : 0),
+        x: col * (NODE_W + COL_GAP),
+        y: row * (NODE_H + ROW_GAP) + (col === 1 ? (NODE_H + ROW_GAP) / 2 : 0),
       };
     });
   }
@@ -81,7 +87,7 @@ function Inner({
       graph.nodes.map((n, i) => ({
         id: n.id,
         type: "step",
-        position: layout[n.id] ?? { x: 0, y: i * 152 },
+        position: layout[n.id] ?? { x: 0, y: i * (NODE_H + ROW_GAP) },
         data: {
           id: n.id,
           title: n.title,
@@ -95,24 +101,22 @@ function Inner({
         selectable: true,
         selected: n.id === current,
       })),
-    // initialNodes is just the seed; we then own positions in local state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [graph.nodes.length],
   );
 
   const [nodes, setNodes] = useState<Node<StepNodeData>[]>(initialNodes);
 
-  // Keep node `data` and `selected` in sync with parent props without
-  // overwriting user-dragged positions.
   useEffect(() => {
     setNodes((existing) => {
       const byId = new Map(existing.map((n) => [n.id, n]));
       return graph.nodes.map((n, i) => {
-        const existing = byId.get(n.id);
+        const old = byId.get(n.id);
         return {
           id: n.id,
           type: "step",
-          position: existing?.position ?? layout[n.id] ?? { x: 0, y: i * 152 },
+          position:
+            old?.position ?? layout[n.id] ?? { x: 0, y: i * (NODE_H + ROW_GAP) },
           data: {
             id: n.id,
             title: n.title,
@@ -130,24 +134,29 @@ function Inner({
     });
   }, [graph, layout, current, onPickStep]);
 
-  const onNodesChange = useCallback((changes: NodeChange<Node<StepNodeData>>[]) => {
-    setNodes((nds) => {
-      const next = applyNodeChanges(changes, nds);
-      // Collect ids of nodes whose drag just ended so we can snap them.
-      const justDropped = new Set<string>();
-      for (const c of changes) {
-        if (c.type === "position" && c.dragging === false) {
-          justDropped.add(c.id);
+  const onNodesChange = useCallback(
+    (changes: NodeChange<Node<StepNodeData>>[]) => {
+      setNodes((nds) => {
+        const next = applyNodeChanges(changes, nds);
+        const justDropped = new Set<string>();
+        for (const c of changes) {
+          if (c.type === "position" && c.dragging === false) {
+            justDropped.add(c.id);
+          }
         }
-      }
-      if (justDropped.size === 0) return next;
-      return next.map((n) =>
-        justDropped.has(n.id)
-          ? { ...n, position: { x: snap(n.position.x), y: snap(n.position.y) } }
-          : n,
-      );
-    });
-  }, []);
+        if (justDropped.size === 0) return next;
+        return next.map((n) =>
+          justDropped.has(n.id)
+            ? {
+                ...n,
+                position: { x: snap(n.position.x), y: snap(n.position.y) },
+              }
+            : n,
+        );
+      });
+    },
+    [],
+  );
 
   const edges = useMemo<Edge[]>(
     () =>
@@ -166,10 +175,12 @@ function Inner({
     setNodes((nds) =>
       nds.map((n, i) => ({
         ...n,
-        position: layout[n.id] ?? { x: 0, y: i * 152 },
+        position: layout[n.id] ?? { x: 0, y: i * (NODE_H + ROW_GAP) },
       })),
     );
-    requestAnimationFrame(() => flow.fitView({ padding: 0.4, duration: 400 }));
+    requestAnimationFrame(() =>
+      flow.fitView({ padding: 0.2, duration: 400, minZoom: 0.85, maxZoom: 1 }),
+    );
   }, [flow, layout]);
 
   // Keyboard shortcuts.
@@ -185,7 +196,12 @@ function Inner({
       }
       if (e.key.toLowerCase() === "f") {
         e.preventDefault();
-        flow.fitView({ padding: 0.4, duration: 400 });
+        flow.fitView({
+          padding: 0.18,
+          duration: 400,
+          minZoom: 0.85,
+          maxZoom: 1,
+        });
       } else if (e.key.toLowerCase() === "r") {
         e.preventDefault();
         resetLayout();
@@ -193,7 +209,10 @@ function Inner({
         e.preventDefault();
         const idx = graph.nodes.findIndex((n) => n.id === current);
         const dir = e.key.toLowerCase() === "j" ? 1 : -1;
-        const next = graph.nodes[Math.max(0, Math.min(graph.nodes.length - 1, idx + dir))];
+        const next =
+          graph.nodes[
+            Math.max(0, Math.min(graph.nodes.length - 1, idx + dir))
+          ];
         if (next) onPickStep(next.id);
       }
     };
@@ -209,43 +228,54 @@ function Inner({
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
-        defaultViewport={{ x: 60, y: 32, zoom: 1 }}
-        minZoom={0.4}
-        maxZoom={1.6}
+        defaultViewport={{ x: 80, y: 24, zoom: 1 }}
+        minZoom={0.6}
+        maxZoom={1.8}
         fitView
-        fitViewOptions={{ padding: 0.4, minZoom: 0.6, maxZoom: 1.2 }}
+        fitViewOptions={{ padding: 0.18, minZoom: 0.85, maxZoom: 1 }}
         proOptions={{ hideAttribution: true }}
-        panOnDrag
+        panOnDrag={[0, 1, 2]}
+        panOnScroll={false}
         zoomOnScroll
+        zoomOnPinch
         nodesDraggable
         nodesConnectable={false}
         elementsSelectable
         selectionOnDrag={false}
       >
-        <Background color="#1f222b" gap={24} size={1.2} />
-        <Controls
-          className="!hidden"
-          showInteractive={false}
+        <Background
+          color="var(--color-border)"
+          gap={28}
+          size={1.2}
+          style={{ opacity: 0.7 }}
         />
+        <Controls className="!hidden" showInteractive={false} />
         <MiniMap
           pannable
           zoomable
           nodeColor={(n) => {
             const status = (n.data as StepNodeData)?.status;
-            if (status === "passed") return "#7df9c5";
-            if (status === "running") return "#a78bfa";
-            if (status === "awaiting_user") return "#ffb547";
-            if (status === "failed") return "#ff5d6e";
-            return "#5a6172";
+            if (status === "passed") return "#4ade80";
+            if (status === "running") return "#ff6b3d";
+            if (status === "awaiting_user") return "#fbbf24";
+            if (status === "failed") return "#f43f5e";
+            return "#545464";
           }}
-          maskColor="rgba(5,5,7,0.7)"
-          style={{ width: 160, height: 96 }}
+          maskColor="color-mix(in srgb, var(--color-bg) 70%, transparent)"
+          style={{ width: 180, height: 100 }}
         />
       </ReactFlow>
 
       <CanvasToolbar
         className="absolute right-3 top-3 z-10"
-        onFit={() => flow.fitView({ padding: 0.4, duration: 400 })}
+        onFit={() =>
+          flow.fitView({
+            padding: 0.18,
+            duration: 400,
+            minZoom: 0.85,
+            maxZoom: 1,
+          })
+        }
         onActual={() => flow.zoomTo(1, { duration: 240 })}
         onZoomIn={() => flow.zoomIn({ duration: 200 })}
         onZoomOut={() => flow.zoomOut({ duration: 200 })}
@@ -266,6 +296,9 @@ function KeyboardLegend() {
   if (!visible) return null;
   return (
     <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-translucent)] px-3 py-1.5 text-[10px] text-[var(--color-ink-subtle)] backdrop-blur transition-opacity duration-500">
+      <Kbd>drag</Kbd>
+      <span>pan</span>
+      <span className="opacity-40">·</span>
       <Kbd>J</Kbd>
       <Kbd>K</Kbd>
       <span>step</span>
