@@ -20,10 +20,10 @@ Workflow templates are JSON in Postgres, compiled per run into a LangGraph `Stat
 
 | Document | File |
 |---|---|
-| Product Requirements (PRD) | [docs/prd.pdf](docs/prd.pdf) |
-| Software Architecture (SAD) | [docs/sad.pdf](docs/sad.pdf) |
-| Technical Architecture (TAD) | [docs/tad.pdf](docs/tad.pdf) |
-| Pitch Deck | [docs/pitch-deck.pdf](docs/pitch-deck.pdf) |
+| Product Requirements (PRD) | [docs/submit/prd.pdf](docs/submit/prd.pdf) |
+| Software Architecture (SAD) | [docs/submit/sad.pdf](docs/submit/sad.pdf) |
+| Technical Architecture (TAD) | [docs/submit/tad.pdf](docs/submit/tad.pdf) |
+| Pitch Deck | [docs/submit/pitch-deck.pdf](docs/submit/pitch-deck.pdf) |
 
 ## Stack
 
@@ -68,16 +68,22 @@ um-hackathon/
 
 | Criterion | Weight | Where it lives |
 |---|---|---|
-| Product Thinking | 30% | `docs/prd.pdf`, `idea-presentation.md`, demo script |
-| Architecture | 20% | `docs/sad.pdf`, `docs/tad.pdf`, `implementation.md` |
+| Product Thinking | 30% | `docs/submit/prd.pdf`, `idea-presentation.md`, demo script |
+| Architecture | 20% | `docs/submit/sad.pdf`, `docs/submit/tad.pdf`, `implementation.md` |
 | Code Quality | 25% | `backend/`, `frontend/` |
-| QA & Tests | 10% | `backend/tests/`, Playwright smoke |
-| Pitch & Demo | 15% | `docs/pitch-deck.pdf`, pitch video |
+| QA & Tests | 10% | `backend/tests/` (graph, HTTP, processing, live-GLM compliance pass/fail) |
+| Pitch & Demo | 15% | `docs/submit/pitch-deck.pdf`, pitch video |
 
 ## Team
 
-_[add team members before submission]_
+Oybek Odilov
+Al-Bazeli Gameel Abduljalil
+Lee Yih Shen
+Samandar Erkinjonov
+Abdugaffor Odilov
 
 ## License
 
-_[to be decided]_
+Apache License 2.0 — see [LICENSE](LICENSE).
+
+3D apartment models in `frontend/public/models/` are CC-BY from [Poly Pizza](https://poly.pizza).

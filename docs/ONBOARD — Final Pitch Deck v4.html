@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ONBOARD — Final Pitch Deck v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="ONBOARD%20%E2%80%94%20Final%20Pitch%20Deck%20v4_files/css2.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --bg:#111117; --bg-alt:#0D0D13; --bg-lift:#1C1C24;
+  --sf:rgba(255,255,255,0.04); --b1:rgba(255,255,255,0.08); --b2:rgba(255,255,255,0.13);
+  --t1:#F1F0ED; --t2:rgba(241,240,237,0.50); --t3:rgba(241,240,237,0.26); --t4:rgba(241,240,237,0.13);
+  --gold:#E8BC6C; --gd:rgba(232,188,108,0.10); --gl:rgba(232,188,108,0.22);
+  --blue:#93C5FD; --bd:rgba(147,197,253,0.09); --bl:rgba(147,197,253,0.20);
+  --green:#6EE7B7; --grd:rgba(110,231,183,0.09); --grl:rgba(110,231,183,0.20);
+  --red:#FCA5A5; --rd:rgba(252,165,165,0.07); --rl:rgba(252,165,165,0.20);
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'Outfit',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);overflow-x:hidden;}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+}
+
+/* NAV */
+.nav{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;align-items:center;gap:11px;}
+.dot{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,0.16);cursor:pointer;transition:all 0.38s cubic-bezier(.4,0,.2,1);}
+.dot.on{background:var(--gold);box-shadow:0 0 8px var(--gold);height:20px;}
+
+/* SLIDE SHELL */
+section{min-height:100vh;display:flex;align-items:center;padding:72px clamp(36px,9vw,136px);position:relative;overflow:hidden;z-index:1;}
+section.alt{background:var(--bg-alt);}
+.w{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:2;}
+.w-sm{max-width:840px;}
+
+/* TYPE */
+.eye{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:3.5px;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:24px;}
+h2{font-family:var(--serif);font-size:clamp(32px,5.2vw,60px);font-weight:400;line-height:1.08;color:var(--t1);margin-bottom:18px;}
+.lead{font-size:clamp(14px,1.5vw,16px);color:var(--t2);max-width:480px;line-height:1.82;margin-bottom:44px;}
+.rule{width:36px;height:1px;background:var(--gold);opacity:0.5;margin-bottom:24px;}
+
+/* CARDS */
+.card{background:var(--sf);border:1px solid var(--b1);border-radius:12px;padding:26px;}
+.card-red{background:var(--rd);border:1px solid var(--rl);border-radius:9px;padding:17px 22px;display:flex;align-items:flex-start;gap:14px;font-family:var(--mono);font-size:12.5px;line-height:1.65;margin-bottom:9px;}
+.card-red .x{color:var(--red);font-weight:700;font-size:15px;flex-shrink:0;margin-top:1px;}
+
+/* CHIPS / TAGS */
+.chip{font-family:var(--mono);font-size:11px;padding:6px 14px;background:var(--sf);border:1px solid var(--b1);border-radius:6px;color:var(--t2);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
+.tag{font-family:var(--mono);font-size:10px;color:var(--blue);border:1px solid var(--bl);padding:4px 12px;border-radius:4px;display:inline-block;white-space:nowrap;}
+.tag-gold{color:var(--gold);border-color:var(--gl);}
+
+/* AMBIENT */
+.glow{position:absolute;border-radius:50%;pointer-events:none;}
+
+/* SCREENSHOT PLACEHOLDER */
+.ss-zone{
+  background:rgba(255,255,255,0.02);
+  border:1px dashed rgba(255,255,255,0.15);
+  border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  min-height:220px;
+  position:relative;overflow:hidden;
+}
+.ss-zone::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.ss-icon{font-size:28px;opacity:0.4;position:relative;z-index:1;}
+.ss-label{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);position:relative;z-index:1;}
+.ss-sub{font-family:var(--mono);font-size:10px;color:var(--t4);position:relative;z-index:1;text-align:center;padding:0 16px;}
+
+/* SCREENSHOT (real) */
+.shot{
+  background:var(--bg-lift);
+  border:1px solid var(--b2);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,0.32);
+}
+.shot img{display:block;width:100%;height:auto;}
+.shot-cap{
+  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--t3);
+  text-align:center;margin-top:10px;
+}
+
+/* DEMO BUTTON */
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(232,188,108,0.4);}70%{box-shadow:0 0 0 10px rgba(232,188,108,0);}100%{box-shadow:0 0 0 0 rgba(232,188,108,0);}}
+.demo-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;font-weight:500;
+  color:var(--gold);
+  border:1px solid var(--gl);
+  background:var(--gd);
+  padding:10px 20px;border-radius:7px;
+  text-decoration:none;
+  animation:pulse-ring 2.4s ease-in-out infinite;
+  transition:background 0.2s;
+  cursor:pointer;
+}
+.demo-btn:hover{background:rgba(232,188,108,0.16);}
+.demo-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+
+/* SCROLL HINT */
+@keyframes drift{0%,100%{transform:translateY(0);opacity:.3;}50%{transform:translateY(7px);opacity:.5;}}
+.hint{animation:drift 2s ease-in-out infinite;}
+
+/* GLM BREATHE */
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(147,197,253,0.1),0 0 28px rgba(147,197,253,0.18);}50%{box-shadow:0 0 0 10px rgba(147,197,253,0.03),0 0 60px rgba(147,197,253,0.32);}}
+.orb{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(147,197,253,0.14) 0%,transparent 70%);border:1px solid var(--bl);display:flex;align-items:center;justify-content:center;animation:breathe 2.8s ease-in-out infinite;flex-shrink:0;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(194px,1fr));gap:14px;}
+
+/* SLIDE 1 */
+.s1-grid{display:grid;grid-template-columns:3fr 2fr;gap:0;align-items:center;min-height:68vh;}
+.s1-num{font-family:var(--serif);font-size:clamp(130px,20vw,240px);font-weight:400;line-height:0.88;letter-spacing:-4px;color:var(--t1);}
+.s1-unit{font-family:var(--serif);font-size:clamp(44px,7.5vw,88px);font-weight:400;color:var(--gold);display:block;margin-top:-6px;}
+.s1-fn{margin-top:28px;padding-top:22px;border-top:1px solid var(--b1);font-family:var(--mono);font-size:11px;color:var(--t3);letter-spacing:0.5px;line-height:1.7;max-width:340px;}
+.s1-fn em{color:var(--t2);font-style:normal;}
+.s1-right{padding:0 0 0 52px;border-left:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;height:100%;align-self:stretch;}
+.s1-story{font-family:var(--serif);font-style:italic;font-size:clamp(22px,2.6vw,32px);line-height:1.45;color:var(--t1);margin-bottom:32px;}
+.s1-story em{font-style:normal;color:var(--gold);}
+
+/* SLIDE 2 */
+.rej-frame{background:var(--bg-lift);border:1px solid var(--b2);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.32);}
+.rej-bar{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--b1);padding:12px 20px;display:flex;align-items:center;gap:8px;}
+.rej-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rej-body{padding:28px 32px 32px;}
+.rej-status{font-family:var(--serif);font-size:clamp(20px,2.4vw,28px);color:var(--red);line-height:1.3;margin-bottom:22px;}
+.rej-row{display:flex;gap:12px;align-items:baseline;font-family:var(--mono);font-size:12px;margin-bottom:8px;}
+.rej-k{color:var(--t3);font-size:10px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;width:64px;}
+.rej-foot{margin-top:22px;padding-top:18px;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.rej-wait{font-family:var(--mono);font-size:11px;color:var(--t3);}
+.rej-stamp{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--red);border:1px solid var(--rl);padding:4px 12px;border-radius:4px;}
+.stat-strip{display:flex;gap:0;border:1px solid var(--b1);border-radius:9px;overflow:hidden;}
+.stat-c{flex:1;padding:18px 18px 16px;background:var(--sf);border-right:1px solid var(--b1);}
+.stat-c:last-child{border-right:none;}
+.stat-n{font-family:var(--serif);font-size:34px;color:var(--gold);line-height:1;margin-bottom:6px;}
+.stat-l{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--t3);text-transform:uppercase;line-height:1.4;}
+.ann{display:flex;align-items:center;gap:10px;margin-top:18px;}
+.ann-l{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gl));}
+.ann-t{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:1px;white-space:nowrap;}
+
+/* PERSONA AVATAR */
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:700;flex-shrink:0;}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.fn{font-family:var(--mono);font-size:12px;line-height:1.5;white-space:pre;text-align:center;color:var(--t2);padding:14px 20px;background:var(--sf);border:1px solid var(--b1);border-radius:8px;}
+.fn.hi{background:var(--bd);border-color:var(--bl);color:var(--blue);}
+.fa{color:var(--t3);font-size:18px;}
+
+/* PRIM GRID */
+.prim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(156px,1fr));gap:12px;}
+.prim{background:var(--sf);border:1px solid var(--b1);border-radius:9px;padding:20px 18px;transition:border-color 0.25s;}
+.prim:hover{border-color:var(--b2);}
+
+/* BEFORE/AFTER */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;border:1px solid var(--b1);border-radius:14px;overflow:hidden;}
+.ba-l{padding:28px;background:var(--sf);}
+.ba-r{padding:28px;background:var(--bd);border-left:1px solid var(--bl);}
+.ba-div{display:flex;align-items:center;justify-content:center;padding:16px 6px;background:var(--bg-lift);border-left:1px solid var(--b1);border-right:1px solid var(--b1);}
+.ba-lbl{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:14px;}
+.ba-in{font-family:var(--mono);font-size:12px;color:var(--t2);line-height:1.72;font-style:italic;}
+.ba-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--b1);}
+.ba-row:last-child{border-bottom:none;}
+.ba-num{font-family:var(--mono);font-size:10px;color:var(--blue);flex-shrink:0;margin-top:2px;}
+.ba-nm{font-size:13px;font-weight:500;color:var(--t1);}
+.ba-sm{font-size:10.5px;color:var(--t3);font-family:var(--mono);margin-top:2px;}
+
+/* CAP CARDS */
+.cap{padding:22px 24px;background:var(--sf);border:1px solid var(--b1);border-radius:10px;position:relative;overflow:hidden;}
+.cap::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;background:var(--blue);opacity:0.45;}
+.cap-num{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--t3);display:block;margin-bottom:12px;}
+
+/* ═════════════════════════
+   CASE SLIDE SYSTEM
+   Completely redesigned for clarity
+═════════════════════════ */
+.case-section{min-height:100vh;display:flex;align-items:center;padding:60px clamp(36px,9vw,136px);position:relative;overflow:hidden;z-index:1;}
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;}
+
+/* Case — left side: what was submitted */
+.case-setup{}
+.case-setup-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--t3);display:block;margin-bottom:20px;
+}
+.case-doc{
+  background:var(--sf);border:1px solid var(--b1);border-radius:10px;
+  padding:20px 22px;margin-bottom:14px;
+}
+.case-doc-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--b1);
+}
+.case-doc-icon{font-size:22px;}
+.case-doc-name{font-size:13px;font-weight:600;color:var(--t1);}
+.case-doc-sub{font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px;}
+
+/* The diff — wrong vs right */
+.diff-card{border-radius:9px;overflow:hidden;border:1px solid var(--b1);}
+.diff-row{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--b1);}
+.diff-row:last-child{border-bottom:none;}
+.diff-side{padding:12px 16px;flex:1;}
+.diff-key{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:5px;}
+.diff-val{font-family:var(--mono);font-size:12.5px;font-weight:500;}
+.diff-val.wrong{color:var(--red);}
+.diff-val.right{color:var(--green);}
+.diff-sep{width:1px;background:var(--b1);align-self:stretch;flex-shrink:0;}
+.diff-op{padding:0 12px;font-family:var(--mono);font-size:16px;color:var(--t3);flex-shrink:0;}
+
+/* Case — resolution strip */
+.case-resolution{
+  margin-top:16px;display:flex;flex-direction:column;gap:7px;
+}
+.case-res-item{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;color:var(--t2);
+}
+.case-res-item .ico{font-size:13px;flex-shrink:0;}
+
+/* Case — right side: GLM response */
+.case-response{}
+.case-response-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--blue);opacity:0.7;display:block;margin-bottom:20px;
+}
+.case-quote{
+  background:var(--bd);border:1px solid var(--bl);border-left:3px solid var(--blue);
+  border-radius:0 12px 12px 0;padding:24px 24px 26px;margin-bottom:20px;
+}
+.case-q-text{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(18px,2.2vw,26px);line-height:1.45;color:var(--t1);
+}
+.case-attr{font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:14px;display:block;}
+
+/* Case — why GLM was needed */
+.case-why{
+  background:rgba(255,255,255,0.025);border:1px solid var(--b1);border-radius:9px;padding:16px 20px;
+}
+.case-why-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:8px;}
+.case-why-text{font-size:13px;color:var(--t2);line-height:1.68;}
+.case-why-text em{color:var(--red);font-style:normal;}
+
+/* Case counter */
+.case-counter{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--t3);
+  margin-bottom:24px;
+}
+.case-counter-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);}
+.case-counter-dot.inactive{background:var(--t4);}
+
+/* VISION */
+.vc{background:var(--sf);border:1px solid var(--b1);border-radius:11px;padding:22px;transition:all 0.28s ease;}
+.vc:hover{background:var(--bd);border-color:var(--bl);transform:translateY(-3px);}
+.vc.mvp{background:var(--gd);border-color:var(--gl);}
+.vc.mvp:hover{background:rgba(232,188,108,0.16);}
+.close-box{padding:44px 48px;border-radius:14px;background:var(--sf);border:1px solid var(--b1);position:relative;overflow:hidden;margin-top:44px;}
+.close-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,var(--gold),var(--blue),transparent);}
+.close-q{font-family:var(--serif);font-size:clamp(20px,2.8vw,34px);font-weight:400;line-height:1.38;color:var(--t1);}
+.close-q em{font-style:italic;color:var(--gold);}
+
+/* PRINT — fixed-size landscape deck pages, one slide per page */
+@page { size: 1600px 1000px; margin: 0; }
+@media print {
+  html, body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body::before { display: none; }
+  .nav, .hint { display: none !important; }
+  section, .case-section {
+    height: 1000px;
+    min-height: 1000px;
+    max-height: 1000px;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+  section:last-of-type { page-break-after: auto; break-after: auto; }
+  /* No animations / pulsing in print */
+  .demo-btn, .orb, .hint { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- 12 NAV DOTS -->
+<nav class="nav" id="nav">
+  <div class="dot on" data-i="0" title="01 – 94 Days"></div>
+  <div class="dot" data-i="1" title="02 – The Cost"></div>
+  <div class="dot" data-i="2" title="03 – Three People"></div>
+  <div class="dot" data-i="3" title="04A – Solution"></div>
+  <div class="dot" data-i="4" title="04B – Primitives"></div>
+  <div class="dot" data-i="5" title="05A – GLM Demo"></div>
+  <div class="dot" data-i="6" title="05B – Capabilities"></div>
+  <div class="dot" data-i="7" title="06 – Plug Test"></div>
+  <div class="dot" data-i="8" title="07A – Case 01"></div>
+  <div class="dot" data-i="9" title="07B – Case 02"></div>
+  <div class="dot" data-i="10" title="07C – Case 03"></div>
+  <div class="dot" data-i="11" title="08 – Vision"></div>
+</nav>
+
+
+<!-- ══════════════════════════════
+  01 — "94 DAYS."
+  Design additions: building SVG silhouette, large number anchor
+══════════════════════════════ -->
+<section id="s01">
+  <!-- Architectural silhouette — subtle background illustration -->
+  <svg style="position:absolute;bottom:0;right:clamp(40px,10vw,180px);opacity:0.04;z-index:0;pointer-events:none;" width="340" height="380" viewBox="0 0 340 380" fill="none">
+    <rect x="90" y="80" width="160" height="300" stroke="white" stroke-width="1.5"></rect>
+    <rect x="60" y="160" width="80" height="220" stroke="white" stroke-width="1.5"></rect>
+    <rect x="200" y="120" width="80" height="260" stroke="white" stroke-width="1.5"></rect>
+    <line x1="0" y1="380" x2="340" y2="380" stroke="white" stroke-width="1.5"></line>
+    <!-- windows -->
+    <rect x="105" y="100" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="133" y="100" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="161" y="100" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="105" y="130" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="133" y="130" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="161" y="130" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="105" y="160" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="133" y="160" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="161" y="160" width="18" height="18" stroke="white" stroke-width="1"></rect>
+    <rect x="75" y="180" width="14" height="14" stroke="white" stroke-width="1"></rect>
+    <rect x="75" y="206" width="14" height="14" stroke="white" stroke-width="1"></rect>
+    <rect x="213" y="140" width="14" height="14" stroke="white" stroke-width="1"></rect>
+    <rect x="213" y="167" width="14" height="14" stroke="white" stroke-width="1"></rect>
+    <rect x="213" y="194" width="14" height="14" stroke="white" stroke-width="1"></rect>
+    <!-- door -->
+    <rect x="148" y="310" width="44" height="70" stroke="white" stroke-width="1.5"></rect>
+  </svg>
+
+  <div class="glow" style="width:680px;height:680px;background:radial-gradient(circle,rgba(232,188,108,0.055) 0%,transparent 60%);top:50%;left:8%;transform:translate(-50%,-50%);"></div>
+  <div class="w">
+    <span class="eye">UMHackathon 2026 · Domain 1 · AI Systems &amp; Agentic Workflow Automation</span>
+    <div class="s1-grid">
+      <div>
+        <div class="s1-num">94<span class="s1-unit">days.</span></div>
+        <div class="s1-fn">Average building approval time in Malaysia.<br><em>Not because the building failed. Because the paperwork did.</em></div>
+      </div>
+      <div class="s1-right">
+        <p class="s1-story">The building was done.<br>The documents were complete.<br><em>One street name.</em></p>
+        <div class="rule"></div>
+        <div style="font-family:var(--serif);font-size:clamp(22px,2.8vw,34px);font-weight:400;">ONBOARD</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--t3);margin-top:6px;text-transform:uppercase;">Powered by Z.AI GLM · Regulated Onboarding Engine</div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;" class="hint">
+    <span style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--t3);">SCROLL</span>
+    <div style="width:1px;height:28px;background:linear-gradient(to bottom,var(--gold),transparent);opacity:0.35;"></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  02 — "21 BUSINESS DAYS TO RESUBMIT."
+  Design: rejection notice, stats, annotation
+══════════════════════════════ -->
+<section id="s02" class="alt">
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(252,165,165,0.05) 0%,transparent 60%);top:-80px;right:-80px;"></div>
+  <div class="w">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;min-height:68vh;">
+      <div>
+        <span class="eye">02 / The Cost of One Wrong Line</span>
+        <!-- Large emoji anchor -->
+        <div style="font-size:44px;margin-bottom:20px;">⏱</div>
+        <h2>21 business<br>days<br><span style="color:var(--gold)">to resubmit.</span></h2>
+        <p class="lead">One address format difference. No missing 
+documents. No failed inspection. Nobody built a system that could have 
+caught it in seconds.</p>
+        <div class="stat-strip">
+          <div class="stat-c"><div class="stat-n">7+</div><div class="stat-l">Offices per<br>submission</div></div>
+          <div class="stat-c"><div class="stat-n">3–4×</div><div class="stat-l">Average<br>resubmit cycles</div></div>
+          <div class="stat-c"><div class="stat-n">0</div><div class="stat-l">Central<br>directory</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="rej-frame">
+          <div class="rej-bar">
+            <div class="rej-dot" style="background:var(--red);opacity:0.85;"></div>
+            <div class="rej-dot" style="background:rgba(255,255,255,0.12);"></div>
+            <div class="rej-dot" style="background:rgba(255,255,255,0.12);"></div>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:1px;margin-left:6px;">MBSA · Submission #BLD-2025-0419</span>
+          </div>
+          <div class="rej-body">
+            <span style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:18px;display:block;">Shah Alam — Zoning Clearance Review</span>
+            <div class="rej-status">REJECTED: Address mismatch<br>on submitted certificate.</div>
+            <div class="rej-row"><span class="rej-k">Found</span><span style="color:var(--red);font-family:var(--mono);font-size:12px;">Jalan Ampang, KL</span></div>
+            <div class="rej-row"><span class="rej-k">Expected</span><span style="color:var(--t2);font-family:var(--mono);font-size:12px;">Jalan Imbi, KL</span></div>
+            <div class="rej-foot">
+              <span class="rej-wait">Next slot: <strong style="color:var(--t1);font-weight:500;">21 business days</strong></span>
+              <span class="rej-stamp">⚠ Resubmit</span>
+            </div>
+          </div>
+        </div>
+        <div class="ann"><div class="ann-l"></div><span class="ann-t">Two streets apart. One month lost.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  03 — "THREE PEOPLE. EVERYONE'S STUCK."
+  Design: persona avatar initials, italic quote opener, photo placeholder
+══════════════════════════════ -->
+<section id="s03">
+  <div class="w">
+    <span class="eye">03 / Who Carries This</span>
+    <h2>Three people.<br><span style="color:var(--gold)">Everyone's stuck.</span></h2>
+    <p class="lead">Nobody here is failing. The admin is thorough. The owner is diligent. The problem is the absence of a system.</p>
+    <div class="g3">
+
+      <div class="card" style="border-top:2px solid var(--gold);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <!-- Photo placeholder / avatar -->
+          <div class="ss-zone" style="min-height:auto;width:48px;height:48px;border-radius:50%;flex-shrink:0;border-style:dashed;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--t3);position:relative;z-index:1;">CA</span>
+          </div>
+          <div>
+            <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--t3);display:block;margin-bottom:3px;">01 — CITY ADMIN</span>
+            <span style="font-size:13px;font-weight:500;color:var(--t1);">The enforcer</span>
+          </div>
+        </div>
+        <p style="font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,20px);line-height:1.4;color:var(--t1);margin-bottom:14px;">"I know what we require."</p>
+        <div style="height:1px;background:var(--b1);margin-bottom:14px;"></div>
+        <p style="font-size:13.5px;color:var(--t2);line-height:1.72;">No system to enforce it consistently. Every submission looks different. Manual review doesn't scale.</p>
+      </div>
+
+      <div class="card" style="border-top:2px solid var(--blue);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <div class="ss-zone" style="min-height:auto;width:48px;height:48px;border-radius:50%;flex-shrink:0;border-style:dashed;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--t3);position:relative;z-index:1;">BO</span>
+          </div>
+          <div>
+            <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--t3);display:block;margin-bottom:3px;">02 — BUILDING OWNER</span>
+            <span style="font-size:13px;font-weight:500;color:var(--t1);">The applicant</span>
+          </div>
+        </div>
+        <p style="font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,20px);line-height:1.4;color:var(--t1);margin-bottom:14px;">"I submitted everything they asked for."</p>
+        <div style="height:1px;background:var(--b1);margin-bottom:14px;"></div>
+        <p style="font-size:13.5px;color:var(--t2);line-height:1.72;">Three weeks later: one wrong address. Resubmit cycle two. Construction crew idle. Clock running.</p>
+      </div>
+
+      <div class="card" style="border-top:1px solid var(--b2);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+          <div class="ss-zone" style="min-height:auto;width:48px;height:48px;border-radius:50%;flex-shrink:0;border-style:dashed;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--t3);position:relative;z-index:1;">PB</span>
+          </div>
+          <div>
+            <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--t3);display:block;margin-bottom:3px;">03 — THE PUBLIC</span>
+            <span style="font-size:13px;font-weight:500;color:var(--t1);">The tenant</span>
+          </div>
+        </div>
+        <p style="font-family:var(--serif);font-style:italic;font-size:clamp(16px,2vw,20px);line-height:1.4;color:var(--t1);margin-bottom:14px;">"The building is done. I can see it."</p>
+        <div style="height:1px;background:var(--b1);margin-bottom:14px;"></div>
+        <p style="font-size:13.5px;color:var(--t2);line-height:1.72;">But approved? Available? Nobody's built a place to check.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  04A — "FROM BLANK FORM TO PUBLISHED BUILDING."
+  Design: flow + screenshot placeholder
+══════════════════════════════ -->
+<section id="s04a" class="alt">
+  <div class="glow" style="width:520px;height:520px;background:radial-gradient(circle,rgba(147,197,253,0.055) 0%,transparent 60%);bottom:-80px;right:-80px;"></div>
+  <div class="w">
+    <span class="eye">04 / The Solution</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;">
+      <div>
+        <div style="font-size:44px;margin-bottom:20px;">🔁</div>
+        <h2>From blank form<br>to published building.<br><span style="color:var(--blue)">One sitting.</span></h2>
+        <p class="lead">One platform. Three roles. Z.AI's GLM reads every document, verifies every claim, and publishes the result.</p>
+        <div class="flow">
+          <div class="fn">Admin<br>Templates</div><span class="fa">→</span>
+          <div class="fn hi">Owner<br>Uploads</div><span class="fa">→</span>
+          <div class="fn hi">GLM<br>Verifies</div><span class="fa">→</span>
+          <div class="fn hi">Published</div><span class="fa">→</span>
+          <div class="fn">Visitor<br>Explores</div>
+        </div>
+        <div style="padding:22px 24px;background:var(--sf);border:1px solid var(--b1);border-radius:10px;">
+          <p style="font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:2px;margin-bottom:8px;">CORE INSIGHT</p>
+          <p style="font-size:14px;color:var(--t2);line-height:1.72;">The workflow is data, not code. A new city is a new template. The same engine runs every one.</p>
+        </div>
+      </div>
+      <!-- Screenshot: workflow canvas + publish summary -->
+      <div>
+        <div class="shot">
+          <img src="docs/screenshots/workflow.png" alt="Onboarding workflow canvas with live publish summary">
+        </div>
+        <div class="shot-cap">Onboarding canvas — every step run by GLM, publish summary on the right.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  04B — "SIX PRIMITIVES. ANY CITY."
+══════════════════════════════ -->
+<section id="s04b">
+  <div class="w">
+    <span class="eye">04B / Workflow Structure</span>
+    <h2>Six primitives.<br><span style="color:var(--blue)">Any city's process.</span></h2>
+    <p class="lead">Every onboarding workflow is assembled from the same six building blocks.</p>
+    <div class="prim-grid">
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">📝</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Form</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">Collects structured input — name, address, floor count.</div></div>
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">🔐</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Compliance Upload</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">GLM reads and verifies against admin-set criteria.</div></div>
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">📁</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Content Upload</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">Floor plans, photos — powers the visitor page.</div></div>
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">🔄</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Cross-Check</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">GLM reconciles all submissions against each other.</div></div>
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">📋</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Review</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">AI-generated summary. Owner confirms before publish.</div></div>
+      <div class="prim"><div style="font-size:24px;margin-bottom:12px;">🚀</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Publish</div><div style="font-size:12px;color:var(--t2);line-height:1.6;">Building goes live. Visitor page activates.</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  05A — "ONE SENTENCE. A COMPLETE WORKFLOW."
+  Design: before/after + screenshot placeholder + demo link
+══════════════════════════════ -->
+<section id="s05a" class="alt">
+  <div class="glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(147,197,253,0.06) 0%,transparent 60%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="w">
+    <span class="eye">05 / Z.AI GLM — The Reasoning Engine</span>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:28px;">
+      <div>
+        <h2 style="margin-bottom:8px;">One sentence in.<br><span style="color:var(--blue)">A complete workflow out.</span></h2>
+        <p style="font-size:14px;color:var(--t2);max-width:440px;">An admin describes Shah Alam's requirements. Z.AI's GLM drafts the entire onboarding workflow — live.</p>
+      </div>
+      <span class="chip" style="font-family:var(--mono);font-size:11px;color:var(--gold);border-color:var(--gl);background:var(--gd);">
+        ▶ See it in the pitch video
+      </span>
+    </div>
+    <div class="ba" style="margin-bottom:28px;">
+      <div class="ba-l">
+        <span class="ba-lbl">Admin types →</span>
+        <p class="ba-in">"Shah Alam requires MBSA zoning clearance, 
+Bomba fire-safety approval (Sijil Perakuan Bomba), proof of ownership, 
+and standard floor plans + photos. Include a cross-check and a final 
+review."</p>
+      </div>
+      <div class="ba-div"><div style="font-family:var(--mono);font-size:16px;color:var(--blue);writing-mode:vertical-lr;letter-spacing:2px;">→</div></div>
+      <div class="ba-r">
+        <span class="ba-lbl">GLM generates →</span>
+        <div class="ba-row"><span class="ba-num">01</span><div><div class="ba-nm">Basic Information Form</div><div class="ba-sm">building name, address, owner details</div></div></div>
+        <div class="ba-row"><span class="ba-num">02</span><div><div class="ba-nm">Ownership Certificate</div><div class="ba-sm">compliance · verified against criteria</div></div></div>
+        <div class="ba-row"><span class="ba-num">03</span><div><div class="ba-nm">MBSA Zoning Clearance</div><div class="ba-sm">compliance · address + zone match</div></div></div>
+        <div class="ba-row"><span class="ba-num">04</span><div><div class="ba-nm">Bomba Fire-Safety (SPB)</div><div class="ba-sm">compliance · certificate + expiry</div></div></div>
+        <div class="ba-row"><span class="ba-num">05</span><div><div class="ba-nm">Floor Plans + Photos</div><div class="ba-sm">content · powers visitor page</div></div></div>
+        <div class="ba-row"><span class="ba-num">06</span><div><div class="ba-nm">Cross-Check</div><div class="ba-sm">reconcile all submitted data</div></div></div>
+        <div class="ba-row" style="border-bottom:none;"><span class="ba-num">07</span><div><div class="ba-nm">Review + Publish</div><div class="ba-sm">AI summary → owner confirms</div></div></div>
+      </div>
+    </div>
+    <!-- Admin templates — Workflows by city -->
+    <div class="shot">
+      <img src="docs/screenshots/admin.png" alt="Admin Workflows by city — Shah Alam template live">
+    </div>
+    <div class="shot-cap">Admin surface — one published city template, one draft, both authored in-app.</div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  05B — "FIVE THINGS ONLY GLM MAKES POSSIBLE."
+══════════════════════════════ -->
+<section id="s05b">
+  <div class="w">
+    <span class="eye">05B / GLM Capabilities</span>
+    <h2>Five things<br><span style="color:var(--blue)">only GLM makes possible.</span></h2>
+    <p class="lead" style="margin-bottom:36px;">Remove any one of these and the platform loses that function entirely. There is no fallback.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+      <div class="cap"><span class="cap-num">GLM_01</span><div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:7px;">Template authoring</div><div style="font-size:12.5px;color:var(--t2);line-height:1.68;">Plain-English description → complete workflow. Admins design processes without writing a single rule.</div></div>
+      <div class="cap"><span class="cap-num">GLM_02</span><div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:7px;">Document parsing</div><div style="font-size:12.5px;color:var(--t2);line-height:1.68;">Reads PDFs, scans, images. Extracts owner name, address, certificate number from unstructured files.</div></div>
+      <div class="cap"><span class="cap-num">GLM_03</span><div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:7px;">Compliance verification</div><div style="font-size:12.5px;color:var(--t2);line-height:1.68;">Applies admin criteria to document content. Returns a verdict with specific evidence — not just pass or fail.</div></div>
+      <div class="cap"><span class="cap-num">GLM_04</span><div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:7px;">Cross-document reconciliation</div><div style="font-size:12.5px;color:var(--t2);line-height:1.68;">Reads all submissions together. Catches contradictions no single step would find alone.</div></div>
+      <div class="cap"><span class="cap-num">GLM_05</span><div style="font-size:14px;font-weight:600;color:var(--blue);margin-bottom:7px;">Visitor assistant</div><div style="font-size:12.5px;color:var(--t2);line-height:1.68;">The public page's chat reads the same files the workflow verified. One knowledge base. No separate pipeline.</div></div>
+      <div style="background:linear-gradient(135deg,rgba(147,197,253,0.09) 0%,rgba(147,197,253,0.02) 100%);border:1px solid var(--bl);border-radius:10px;padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;">
+        <div class="orb"><span style="font-family:var(--serif);color:var(--blue);font-size:20px;">GLM</span></div>
+        <div><div style="font-size:14px;font-weight:500;margin-bottom:5px;">Z.AI General Language Model</div><div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;">Central Reasoning Engine</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  06 — "REMOVE GLM. THE SYSTEM STOPS."
+══════════════════════════════ -->
+<section id="s06" class="alt">
+  <div class="w w-sm">
+    <span class="eye">06 / The Dependency Test</span>
+    <div style="font-size:44px;margin-bottom:20px;">🔌</div>
+    <h2>Remove GLM.<br><span style="color:var(--red)">The system stops.</span></h2>
+    <p class="lead" style="margin-bottom:36px;">Not degrades. These five
+ functions do not exist without GLM. There is no version that does less —
+ only a version that does nothing.</p>
+    <div style="margin-bottom:28px;">
+      <div class="card-red"><span class="x">✗</span><span><span style="color:var(--red);font-weight:600;">No GLM</span><span style="color:var(--t3);"> → </span>No template drafting. Admins face a blank editor. Shah Alam's workflow doesn't exist.</span></div>
+      <div class="card-red"><span class="x">✗</span><span><span style="color:var(--red);font-weight:600;">No GLM</span><span style="color:var(--t3);"> → </span>No document reading. Uploaded files are binary blobs. Nothing is extracted. Nothing is known.</span></div>
+      <div class="card-red"><span class="x">✗</span><span><span style="color:var(--red);font-weight:600;">No GLM</span><span style="color:var(--t3);"> → </span>No compliance check. Forms submit. Nothing ever verifiably passes or fails.</span></div>
+      <div class="card-red"><span class="x">✗</span><span><span style="color:var(--red);font-weight:600;">No GLM</span><span style="color:var(--t3);"> → </span>No cross-check. The form says 10 floors. The plan shows 12. It publishes wrong.</span></div>
+      <div class="card-red" style="margin-bottom:0;"><span class="x">✗</span><span><span style="color:var(--red);font-weight:600;">No GLM</span><span style="color:var(--t3);"> → </span>No visitor assistant. The chat panel loads. There's nothing for it to say.</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding-top:24px;border-top:1px solid var(--b1);">
+      <div style="width:2px;height:36px;background:var(--red);border-radius:2px;opacity:0.6;flex-shrink:0;"></div>
+      <p style="font-family:var(--mono);font-size:12.5px;color:var(--t2);line-height:1.7;">The forms render. The buttons work. <span style="color:var(--t1);">The platform does nothing.</span></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  07A — CASE 01: ADDRESS MISMATCH
+  REDESIGNED: situation → GLM response → resolution → why it matters
+══════════════════════════════ -->
+<section id="s07a" class="case-section">
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(232,188,108,0.04) 0%,transparent 60%);top:50%;right:-100px;transform:translateY(-50%);"></div>
+  <div class="w">
+    <span class="eye">07 / How GLM Handles Real-World Failures</span>
+
+    <!-- Case counter -->
+    <div class="case-counter">
+      <div class="case-counter-dot"></div>
+      <div class="case-counter-dot inactive"></div>
+      <div class="case-counter-dot inactive"></div>
+      <span style="margin-left:4px;">Case 01 of 03 — GLM detects: Address Mismatch</span>
+    </div>
+
+    <div class="case-grid">
+      <!-- LEFT: what happened -->
+      <div class="case-setup">
+        <span class="case-setup-label">📄 What was submitted</span>
+
+        <div class="case-doc">
+          <div class="case-doc-header">
+            <span class="case-doc-icon">📄</span>
+            <div>
+              <div class="case-doc-name">Bomba Fire-Safety Certificate</div>
+              <div class="case-doc-sub">Sijil Perakuan Bomba · Compliance Upload · Step 4</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--t2);line-height:1.68;">A legitimate, valid certificate — properly signed and dated. GLM parses it successfully and extracts all fields.</p>
+        </div>
+
+        <!-- The diff -->
+        <div class="diff-card">
+          <div class="diff-row">
+            <div class="diff-side" style="background:rgba(252,165,165,0.05);">
+              <div class="diff-key">Certificate says</div>
+              <div class="diff-val wrong">Jalan Ampang, KL</div>
+            </div>
+            <div class="diff-sep"></div>
+            <div class="diff-op">≠</div>
+            <div class="diff-sep"></div>
+            <div class="diff-side" style="background:rgba(110,231,183,0.04);">
+              <div class="diff-key">Registered address</div>
+              <div class="diff-val right">Jalan Imbi, KL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What happens next -->
+        <div class="case-resolution" style="margin-top:16px;">
+          <div class="case-res-item"><span class="ico">↩</span> Owner re-uploads the correct certificate</div>
+          <div class="case-res-item"><span class="ico">🔄</span> Step retries automatically — no restart needed</div>
+          <div class="case-res-item"><span class="ico">✓</span> Workflow continues from this point</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: GLM's response -->
+      <div class="case-response">
+        <span class="case-response-label">💬 What Z.AI GLM returned</span>
+
+        <div class="case-quote">
+          <p class="case-q-text">"This certificate reads Jalan Ampang. Your registered address is Jalan Imbi. These must match before this step can pass."</p>
+          <span class="case-attr">GLM_03 · Compliance Verification · Step 4</span>
+        </div>
+
+        <div class="case-why">
+          <span class="case-why-label">⚡ Why GLM was needed here</span>
+          <p class="case-why-text">A human reviewer checks one document at a time, in a queue. GLM reads the certificate <em>and</em> the registered address simultaneously, compares the two, and returns the specific mismatch — in seconds, not weeks.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  07B — CASE 02: FLOOR COUNT CONTRADICTION
+══════════════════════════════ -->
+<section id="s07b" class="case-section alt">
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(147,197,253,0.04) 0%,transparent 60%);top:50%;left:-100px;transform:translateY(-50%);"></div>
+  <div class="w">
+    <span class="eye">07 / How GLM Handles Real-World Failures</span>
+    <div class="case-counter">
+      <div class="case-counter-dot inactive"></div>
+      <div class="case-counter-dot"></div>
+      <div class="case-counter-dot inactive"></div>
+      <span style="margin-left:4px;">Case 02 of 03 — GLM detects: Cross-Document Contradiction</span>
+    </div>
+
+    <div class="case-grid">
+      <div class="case-setup">
+        <span class="case-setup-label">📐 What was submitted</span>
+        <div class="case-doc">
+          <div class="case-doc-header">
+            <span class="case-doc-icon">📐</span>
+            <div>
+              <div class="case-doc-name">Two separate documents, two steps apart</div>
+              <div class="case-doc-sub">Basics Form (Step 1) + Architectural Floor Plan (Step 5)</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--t2);line-height:1.68;">Neither document is wrong on its own. The contradiction only becomes visible when you read both together.</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-row">
+            <div class="diff-side" style="background:rgba(252,165,165,0.05);">
+              <div class="diff-key">Form says</div>
+              <div class="diff-val wrong">10 floors</div>
+            </div>
+            <div class="diff-sep"></div>
+            <div class="diff-op">≠</div>
+            <div class="diff-sep"></div>
+            <div class="diff-side" style="background:rgba(110,231,183,0.04);">
+              <div class="diff-key">Floor plan shows</div>
+              <div class="diff-val right">12 floors</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-resolution" style="margin-top:16px;">
+          <div class="case-res-item"><span class="ico">✏️</span> Owner corrects the form to match the floor plan</div>
+          <div class="case-res-item"><span class="ico">🔄</span> Cross-check step retries automatically</div>
+          <div class="case-res-item"><span class="ico">✓</span> Accurate record published</div>
+        </div>
+      </div>
+
+      <div class="case-response">
+        <span class="case-response-label">💬 What Z.AI GLM returned</span>
+        <div class="case-quote">
+          <p class="case-q-text">"The floor plan shows 12 floors. Your basics form states 10. Reconcile before this step can pass."</p>
+          <span class="case-attr">GLM_04 · Cross-Document Reconciliation · Step 6</span>
+        </div>
+        <div class="case-why">
+          <span class="case-why-label">⚡ Why GLM was needed here</span>
+          <p class="case-why-text">This contradiction lives across two 
+documents uploaded at different steps. No single-step verification would
+ catch it. GLM reads <em>all submitted documents simultaneously</em> at the cross-check step — a task no sequential human review handles reliably.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  07C — CASE 03: MISSING FIELD
+══════════════════════════════ -->
+<section id="s07c" class="case-section">
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(110,231,183,0.04) 0%,transparent 60%);bottom:-100px;right:-100px;"></div>
+  <div class="w">
+    <span class="eye">07 / How GLM Handles Real-World Failures</span>
+    <div class="case-counter">
+      <div class="case-counter-dot inactive"></div>
+      <div class="case-counter-dot inactive"></div>
+      <div class="case-counter-dot"></div>
+      <span style="margin-left:4px;">Case 03 of 03 — GLM detects: Missing Required Field</span>
+    </div>
+
+    <div class="case-grid">
+      <div class="case-setup">
+        <span class="case-setup-label">🔍 What was submitted</span>
+        <div class="case-doc">
+          <div class="case-doc-header">
+            <span class="case-doc-icon">🏛️</span>
+            <div>
+              <div class="case-doc-name">MBSA Zoning Clearance Certificate</div>
+              <div class="case-doc-sub">Compliance Upload · Step 3</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--t2);line-height:1.68;">The
+ certificate is legitimate and was parsed successfully. All visible 
+fields read correctly — except one is simply absent from the document.</p>
+        </div>
+
+        <div style="background:var(--rd);border:1px solid var(--rl);border-radius:9px;padding:16px 20px;">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--red);margin-bottom:8px;text-transform:uppercase;">Missing field</div>
+          <div style="font-family:var(--mono);font-size:13px;color:var(--t1);margin-bottom:4px;">Certificate Expiry Date</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--t3);">Required by Shah Alam workflow criteria</div>
+        </div>
+
+        <div class="case-resolution" style="margin-top:16px;">
+          <div class="case-res-item"><span class="ico">📨</span> Owner requests reissued certificate from MBSA</div>
+          <div class="case-res-item"><span class="ico">🔄</span> Re-uploads — step retries from this point</div>
+          <div class="case-res-item"><span class="ico">✓</span> Workflow resumes — no earlier steps repeated</div>
+        </div>
+      </div>
+
+      <div class="case-response">
+        <span class="case-response-label">💬 What Z.AI GLM returned</span>
+        <div class="case-quote">
+          <p class="case-q-text">"The certificate was parsed successfully. The expiry date field is absent. This field is required by Shah Alam criteria."</p>
+          <span class="case-attr">GLM_03 · Missing Field Detection · Step 3</span>
+        </div>
+        <div class="case-why">
+          <span class="case-why-label">⚡ Why GLM was needed here</span>
+          <p class="case-why-text">The document looks valid on the 
+surface. GLM parses it, maps every field against the admin's criteria, 
+and identifies the gap — not a format error, but an absent field. <em>The system doesn't fail silently.</em> It pauses, explains, and tells the owner exactly what to fix.</p>
+        </div>
+
+        <!-- QA chip row on last case -->
+        <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:8px;">
+          <div class="chip">✓ Ambiguous input handling</div>
+          <div class="chip">✓ Plain-English rejections</div>
+          <div class="chip">✓ Step-level retry</div>
+          <div class="chip">✓ Stateful resumption</div>
+          <div class="chip">✓ Incomplete data detection</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+  08 — "WE BUILT THIS FOR BUILDINGS."
+  Design: domain cards + screenshot placeholder + demo link
+══════════════════════════════ -->
+<section id="s08" class="alt">
+  <div class="glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(232,188,108,0.05) 0%,transparent 60%);bottom:-200px;right:-200px;"></div>
+  <div class="w">
+    <span class="eye">08 / The Vision</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;">
+
+      <!-- Left: copy + cards -->
+      <div>
+        <div style="font-size:44px;margin-bottom:20px;">🏙️</div>
+        <h2>We built this<br>for buildings.</h2>
+        <p class="lead">The engine adapts. The AI stays. Same platform, same primitives, different template.</p>
+        <div class="g2" style="grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="vc mvp" style="background:var(--gd);border-color:var(--gl);border-radius:11px;padding:20px;">
+            <div style="font-size:24px;margin-bottom:12px;">🏢</div>
+            <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:6px;">Building Onboarding</div>
+            <div style="font-size:11.5px;color:var(--t2);line-height:1.6;">Shah Alam. MBSA. Live MVP.</div>
+            <div style="margin-top:12px;"><span class="tag tag-gold" style="font-size:9px;">▶ LIVE MVP</span></div>
+          </div>
+          <div class="vc" style="border-radius:11px;padding:20px;">
+            <div style="font-size:24px;margin-bottom:12px;">👥</div>
+            <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">HR Onboarding</div>
+            <div style="font-size:11.5px;color:var(--t2);line-height:1.6;">Same engine. New template.</div>
+          </div>
+          <div class="vc" style="border-radius:11px;padding:20px;">
+            <div style="font-size:24px;margin-bottom:12px;">🔐</div>
+            <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">KYC &amp; Compliance</div>
+            <div style="font-size:11.5px;color:var(--t2);line-height:1.6;">Regulated, multi-document.</div>
+          </div>
+          <div class="vc" style="border-radius:11px;padding:20px;">
+            <div style="font-size:24px;margin-bottom:12px;">🤝</div>
+            <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Vendor Licensing</div>
+            <div style="font-size:11.5px;color:var(--t2);line-height:1.6;">Permits, procurement.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: published building screenshot + closing -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="shot">
+          <img src="docs/screenshots/building3d.png" alt="Published building page — 3D scene + grounded assistant">
+        </div>
+        <div class="shot-cap">Published building — 3D scene, profile readout, grounded assistant chat.</div>
+        <div class="close-box">
+          <p class="close-q">
+            "From blank form to published building —<br>
+            <em>guided, verified, and published by Z.AI's GLM.</em>
+          </p>
+          <p style="font-family:var(--serif);font-size:clamp(14px,1.8vw,20px);color:var(--t2);margin-top:10px;font-style:italic;">You already know what comes next."</p>
+          <div style="margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <span style="font-family:var(--mono);font-size:9px;letter-spacing:2.5px;color:var(--t3);">ONBOARD · UMHACKATHON 2026 · DOMAIN 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script>
+const IDS=['s01','s02','s03','s04a','s04b','s05a','s05b','s06','s07a','s07b','s07c','s08'];
+const dots=document.querySelectorAll('.dot');
+dots.forEach((d,i)=>{
+  d.addEventListener('click',()=>document.getElementById(IDS[i])?.scrollIntoView({behavior:'smooth'}));
+});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=IDS.indexOf(e.target.id);
+      if(i!==-1){dots.forEach(d=>d.classList.remove('on'));dots[i]?.classList.add('on');}
+    }
+  });
+},{threshold:0.45});
+IDS.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+document.addEventListener('keydown',e=>{
+  const a=Array.from(dots).findIndex(d=>d.classList.contains('on'));
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){const n=Math.min(a+1,IDS.length-1);document.getElementById(IDS[n])?.scrollIntoView({behavior:'smooth'});}
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){const p=Math.max(a-1,0);document.getElementById(IDS[p])?.scrollIntoView({behavior:'smooth'});}
+});
+</script>
+
+
+</body></html>
