@@ -88,6 +88,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     font-family: var(--mono); font-size: 9pt; letter-spacing: 1.8px;
     color: rgba(241,240,237,0.55); text-transform: uppercase; margin-top: 4pt;
   }}
+  .cover-team-label {{
+    font-family: var(--mono); font-size: 8.5pt; letter-spacing: 2px;
+    color: rgba(241,240,237,0.42); text-transform: uppercase;
+    margin: 28pt 0 6pt;
+  }}
+  .cover-team-list {{
+    font-family: var(--sans); font-size: 11pt; line-height: 1.6;
+    color: rgba(241,240,237,0.85); column-count: 2; column-gap: 36pt;
+    max-width: 460pt;
+  }}
+  .cover-team-list span {{ display: block; }}
 
   /* ────────── Body ────────── */
   .body {{ }}
@@ -184,6 +195,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="cover-title">{cover_title}</div>
     <div class="cover-sub">{cover_sub}</div>
     <div class="cover-rule"></div>
+    <div class="cover-team-label">Team · Opus Magnum</div>
+    <div class="cover-team-list">
+      <span>Oybek Odilov</span>
+      <span>Al-Bazeli Gameel Abduljalil</span>
+      <span>Lee Yih Shen</span>
+      <span>Samandar Erkinjonov</span>
+      <span>Abdugaffor Odilov</span>
+    </div>
   </div>
   <div>
     <div class="cover-brand">ONBOARD</div>

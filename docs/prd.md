@@ -119,7 +119,44 @@ Form rendering survives. Nothing else does. This is the architectural litmus tes
 
 The demo judged here is three minutes long. Every shipped feature earns a beat in that demo. Features that do not appear in the demo script (real auth, payments, observability) were cut so the GLM-critical path could be built deeply rather than broadly.
 
-## 5. Success Metrics (MVP)
+## 5. AI Model & Prompt Design
+
+### 5.1 Model selection
+
+The platform uses **`ilmu-glm-5.1`** through the ILMU API (`https://api.ilmu.ai/v1`), which is OpenAI-compatible and surfaces tool-use, JSON mode, and SSE streaming through the standard OpenAI Python SDK. Three properties make it the right fit for an AI-centric onboarding engine:
+
+- **Long context (200k tokens).** Whole content-document corpora for a single building fit inline, so the visitor assistant can ground answers without an embeddings layer for the MVP.
+- **Native tool use + structured output.** Every primitive that needs reasoning (`extract_document`, `verify_against_criteria`, `cross_check_documents`, `summarize_for_review`, `draft_template`, `explain_field`, `answer_visitor_question`) is exposed as a typed function and returns parsed arguments, eliminating brittle text parsing.
+- **Reasoning-effort knob.** `reasoning_effort="low"` is materially faster for extraction and verification, while free-form tutor and visitor streams omit the parameter to let the model think when grounding requires it.
+
+Using any other reasoning model is explicitly disqualifying for this domain; GLM is therefore both a product requirement and a hackathon constraint.
+
+### 5.2 Prompting strategy
+
+The platform mixes two distinct strategies, chosen per surface:
+
+- **Few-shot, schema-forced tool calls** for compliance and content primitives. Every reasoning step issues a single `chat.completions.create` with `tool_choice="required"` against a tightly-scoped tool schema (`extract_document`, `verify_against_criteria`, etc.) and a system prompt that names the criteria, the doc class, and the success contract. This eliminates hallucinated structures and keeps every call auditable.
+- **Multi-step agentic prompting** for the human-facing assistants. The admin tutor and visitor chat both run as SSE-streamed dialogues with the conversation history and a domain-grounding payload (template steps for the tutor; building profile + content-doc extracts for the visitor). The system prompt enforces "answer only from the grounding material; otherwise say you do not know."
+
+We chose this split because the verification path needs *deterministic shape* (parsed JSON arguments) while the tutoring path needs *open-ended reasoning over rich context*. Mixing the two would make verification fragile and the tutor robotic.
+
+### 5.3 Context and input handling
+
+- **Compliance documents** are streamed through `processing/pipeline.py`: `pypdf` extracts the text layer, falling back to `pdf2image + pytesseract` OCR if the layer is empty. Images route directly to `pytesseract`. GLM never sees raw PDFs because `ilmu-glm-5.1` does not currently accept image inputs (verified empirically).
+- **Per-document budget.** Extracted text is truncated to **~30,000 characters** before reaching `extract_document`; verification works on the structured output, not the raw text, so this ceiling never starves the criteria check.
+- **Visitor grounding budget.** The visitor assistant assembles `building.profile + scene_config + content-doc extracts` and caps the grounding payload at **≤ 60,000 characters** (well inside GLM's 200k window). Anything longer is chunked oldest-first into a "context summary" block.
+- **Hard rejections.** Empty extractions (OCR returned 0 chars) are surfaced as "document unreadable — please re-upload as searchable PDF" before any GLM call is made. We never feed empty payloads to the model.
+
+### 5.4 Fallback and failure behavior
+
+- **Transient API errors (429 / 5xx).** `GLMClient._chat` retries up to 4 times with exponential backoff and jitter.
+- **Malformed tool arguments.** `call_tool` catches `json.JSONDecodeError` and returns `{_error, _raw}` so the primitive marks the step `failed` with a retry affordance instead of crashing the run.
+- **Hallucinated or off-topic completions.** Verification primitives compare structured arguments against the criteria list — a "verdict": "pass" with no cited evidence is rejected and re-prompted once; on a second failure the step is marked `failed` for human review.
+- **Visitor grounding miss.** The system prompt forces a "I don't know based on the documents this owner submitted" response when the grounding material lacks the answer. We do not fall back to general knowledge.
+- **Human escalation path.** Every primitive can route to `human_review`, which surfaces the failing step's `decision_log` and a GLM-written summary so a reviewer can override or restart.
+- **Auditability.** Every call — successful or failed — writes to `step_runs.decision_log` with prompt, tool, arguments, response, and duration. A failure that escapes review is forensically reproducible.
+
+## 6. Success Metrics (MVP)
 
 | Metric | Target | How measured |
 |---|---|---|
@@ -129,11 +166,44 @@ The demo judged here is three minutes long. Every shipped feature earns a beat i
 | End-to-end demo time | ≤ 3 minutes live | Timed rehearsal |
 | Template authoring time | ≤ 2 minutes from blank to publish via `draft_with_ai` | Manual measurement |
 
-## 6. GLM-Centrality Validation
+## 7. GLM-Centrality Validation
 
 Every one of the five critical surfaces calls GLM at runtime, each logged under `step_runs.decision_log` with its tool name, arguments, and timing. A reviewer who stubs `GLMClient` to raise immediately would see the workflow freeze at step 1, template drafting fail, and the visitor assistant return an error. The litmus test passes.
 
-## 7. Risks & Mitigations
+## 8. Assumptions & Constraints
+
+### 8.1 LLM cost constraint
+
+We estimate **~15–25 GLM calls per full Shah Alam onboarding** (one per `extract_document` per uploaded doc, one per `verify_against_criteria`, plus admin and visitor turns). With `ilmu-glm-5.1`'s typical structured-output sizing and `reasoning_effort="low"` on extraction/verification, an average end-to-end run lands around **40–80k input + ~6–10k output tokens**.
+
+Two design decisions hold the cost line:
+
+- **`reasoning_effort="low"` is the default on every structured-output path.** Extraction and verification do not benefit from deep reasoning; the model still emits the right schema, faster and cheaper.
+- **Decision-log content elision.** Long message bodies in the decision log are truncated past 4k characters so we never re-feed entire documents back into prompts during retries or human review.
+
+A future cost lever (not in MVP scope) is response caching of `extract_document` keyed by file SHA — a re-uploaded duplicate would skip the model entirely.
+
+### 8.2 Technical constraints
+
+- **Vision unavailable on `ilmu-glm-5.1`.** Image documents must pass through OCR before the model sees them. PDFs without a text layer use the `pdf2image + pytesseract` fallback; raw images go directly to `pytesseract`.
+- **Auth is mocked.** A seeded admin and a seeded owner stand in for a real identity provider. Drop-in JWT is the designed upgrade path.
+- **Single-tenant demo.** No row-level security or per-tenant data partitioning.
+- **One jurisdiction is authored.** The engine accepts any number of city templates; the submission ships Shah Alam end-to-end. A second city is one JSON file.
+
+### 8.3 Performance constraints
+
+- **GLM rate limits.** ILMU's published rate limits apply; the demo path has been profiled to stay below the per-minute quota at one concurrent run.
+- **OCR throughput.** `pdf2image + pytesseract` on a multi-page scanned PDF can take 5–15 seconds; users see a per-file processing card with live status so latency is never silent.
+- **SSE polling cadence.** The run-progress SSE endpoint polls the DB at 500 ms — good for one demo run, replaceable by a Redis pub/sub bus for production load.
+
+### 8.4 User input
+
+- **Owner-submitted documents are trusted as-is.** The system never modifies an uploaded file; it only extracts, verifies, and audits.
+- **Required-field gating.** A `collect_form` step cannot advance until the owner submits the configured fields; the React Flow canvas highlights the awaiting node until input arrives.
+- **Re-upload loop on failure.** A failed verification re-routes to the same upload step rather than crashing the run; `pending_input[step_id]` is cleared so the new upload kicks off a fresh GLM verification.
+- **Human review is the final stop.** When `human_review` fires, no automated decision overrides the reviewer; the model's summary is advisory, not authoritative.
+
+## 9. Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 |---|---|---|
@@ -144,7 +214,7 @@ Every one of the five critical surfaces calls GLM at runtime, each logged under 
 | Template becomes invalid mid-edit (unknown primitive) | Run crashes | `compile_template` raises `ValueError("unknown primitive: …")` before the graph executes |
 | Checkpointer DB corruption | Run cannot resume | SQLite file scoped to `var/langgraph.sqlite`; deletable without data loss (state also mirrored in `workflow_runs.state`) |
 
-## 8. Future Work (not in this submission)
+## 10. Future Work (not in this submission)
 
 - Second city authored (Kuala Lumpur) to prove config-only expansion.
 - Real multi-tenant auth + per-seat isolation.
