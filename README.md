@@ -23,6 +23,7 @@ Workflow templates are JSON in Postgres, compiled per run into a LangGraph `Stat
 | Product Requirements (PRD) | [docs/submit/prd.pdf](docs/submit/prd.pdf) |
 | Software Architecture (SAD) | [docs/submit/sad.pdf](docs/submit/sad.pdf) |
 | Technical Architecture (TAD) | [docs/submit/tad.pdf](docs/submit/tad.pdf) |
+| Quality Assurance & Test (QATD) | [docs/submit/qatd.pdf](docs/submit/qatd.pdf) |
 | Pitch Deck | [docs/submit/pitch-deck.pdf](docs/submit/pitch-deck.pdf) |
 
 ## Stack
@@ -71,7 +72,7 @@ um-hackathon/
 | Product Thinking | 30% | `docs/submit/prd.pdf`, `idea-presentation.md`, demo script |
 | Architecture | 20% | `docs/submit/sad.pdf`, `docs/submit/tad.pdf`, `implementation.md` |
 | Code Quality | 25% | `backend/`, `frontend/` |
-| QA & Tests | 10% | `backend/tests/` (graph, HTTP, processing, live-GLM compliance pass/fail) |
+| QA & Tests | 10% | `docs/submit/qatd.pdf`, `backend/tests/` (graph, HTTP, processing, live-GLM smoke) |
 | Pitch & Demo | 15% | `docs/submit/pitch-deck.pdf`, pitch video |
 
 ## Team

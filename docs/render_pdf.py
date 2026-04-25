@@ -240,6 +240,11 @@ META = {
         cover_sub="Stack, ILMU/GLM integration, the workflow engine, and the trade-offs we made to ship the MVP.",
         doc_kind="TAD · Technical Architecture",
     ),
+    "qatd": dict(
+        cover_title='<em>Quality</em><br>Assurance.',
+        cover_sub="Risk anticipation, mitigation, and the test strategy that proves the GLM-critical path works end-to-end.",
+        doc_kind="QATD · Quality Assurance & Test",
+    ),
 }
 
 
