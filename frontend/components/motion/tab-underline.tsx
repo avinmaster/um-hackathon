@@ -36,11 +36,7 @@ export function TabUnderline<T extends string>({
             {isActive && (
               <motion.span
                 layoutId={layoutId}
-                className="absolute -bottom-1 left-2 right-2 h-[2px] rounded-full"
-                style={{
-                  background:
-                    "linear-gradient(90deg, var(--color-primary) 0%, var(--color-cyan) 100%)",
-                }}
+                className="absolute -bottom-1 left-2 right-2 h-[2px] rounded-full bg-[var(--color-primary)]"
                 transition={{ type: "spring", stiffness: 500, damping: 38 }}
               />
             )}

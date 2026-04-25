@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { StepForm } from "./step-form";
 import { UploadPanel } from "./upload-panel";
 import { DecisionLog } from "./decision-log";
+import { Markdown } from "../ui/markdown";
 import { primitiveLabel } from "../status";
 
 type Props = {
@@ -232,8 +233,8 @@ function PrimitiveBody({
     return (
       <div className="space-y-4">
         {summary ? (
-          <article className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-4 text-sm leading-relaxed whitespace-pre-wrap">
-            {summary}
+          <article className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-4 text-sm leading-relaxed">
+            <Markdown>{summary}</Markdown>
           </article>
         ) : (
           <div className="rounded-[var(--r-md)] border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]">

@@ -40,10 +40,6 @@ export function GridLines({
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="grid-stroke" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--color-primary)" />
-            <stop offset="100%" stopColor="var(--color-cyan)" />
-          </linearGradient>
           <pattern
             id={`grid-${variant}`}
             width={cellSize}
@@ -53,7 +49,7 @@ export function GridLines({
             <path
               d={`M ${cellSize} 0 L 0 0 0 ${cellSize}`}
               fill="none"
-              stroke="url(#grid-stroke)"
+              stroke="var(--color-border-strong)"
               strokeWidth="0.6"
             />
           </pattern>
@@ -73,7 +69,7 @@ export function GridLines({
             height={cellSize}
             patternUnits="userSpaceOnUse"
           >
-            <circle cx="0.5" cy="0.5" r="0.8" fill="var(--color-primary-glow)" />
+            <circle cx="0.5" cy="0.5" r="0.8" fill="var(--color-ink-subtle)" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#dots-${variant})`} />

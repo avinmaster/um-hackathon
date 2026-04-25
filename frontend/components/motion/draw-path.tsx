@@ -10,7 +10,7 @@ import { useRef } from "react";
  */
 export function DrawPath({
   d,
-  stroke = "url(#draw-path-gradient)",
+  stroke = "var(--color-primary-glow)",
   strokeWidth = 1.5,
   duration = 1.2,
   delay = 0,
@@ -44,12 +44,6 @@ export function DrawPath({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id="draw-path-gradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="var(--color-primary)" />
-          <stop offset="100%" stopColor="var(--color-cyan)" />
-        </linearGradient>
-      </defs>
       <motion.path
         d={d}
         stroke={stroke}

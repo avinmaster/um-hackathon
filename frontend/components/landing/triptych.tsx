@@ -107,12 +107,6 @@ function RoleCard({
 function AdminIllustration(): ReactNode {
   return (
     <svg viewBox="0 0 200 100" className="h-24 w-full">
-      <defs>
-        <linearGradient id="admin-stroke" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="var(--color-primary)" />
-          <stop offset="100%" stopColor="var(--color-cyan)" />
-        </linearGradient>
-      </defs>
       {[
         { x: 16, y: 30 },
         { x: 80, y: 18 },
@@ -127,7 +121,7 @@ function AdminIllustration(): ReactNode {
             height="22"
             rx="4"
             fill="var(--color-bg-raised)"
-            stroke="url(#admin-stroke)"
+            stroke="var(--color-primary-glow)"
             strokeWidth="1"
           />
           <FileEdit
@@ -157,7 +151,7 @@ function AdminIllustration(): ReactNode {
       ))}
       <path
         d="M 52 41 L 80 30 M 52 41 L 80 67 M 116 30 L 144 41 M 116 67 L 144 41"
-        stroke="url(#admin-stroke)"
+        stroke="var(--color-primary-glow)"
         strokeWidth="1"
         fill="none"
         strokeDasharray="3 3"
@@ -238,12 +232,6 @@ function OwnerIllustration(): ReactNode {
 function VisitorIllustration(): ReactNode {
   return (
     <svg viewBox="0 0 200 100" className="h-24 w-full">
-      <defs>
-        <linearGradient id="visitor-stroke" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="var(--color-primary)" />
-          <stop offset="100%" stopColor="var(--color-cyan)" />
-        </linearGradient>
-      </defs>
       <g>
         <rect
           x="20"
@@ -252,7 +240,7 @@ function VisitorIllustration(): ReactNode {
           height="32"
           rx="6"
           fill="var(--color-bg-raised)"
-          stroke="url(#visitor-stroke)"
+          stroke="var(--color-primary-glow)"
           strokeWidth="1"
         />
         <rect

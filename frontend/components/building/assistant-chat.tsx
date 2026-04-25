@@ -1,12 +1,17 @@
 "use client";
-import { Send, Sparkles } from "lucide-react";
+import { AlertTriangle, RefreshCw, Send, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { streamPOST } from "../../lib/sse";
 import { Button } from "../ui/button";
+import { Markdown } from "../ui/markdown";
 import { cn } from "../../lib/cn";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  error?: string;
+};
 
 const SUGGESTIONS = [
   "What's on floor 3?",
@@ -27,9 +32,12 @@ export function AssistantChat({ buildingId }: { buildingId: string }) {
   const [streaming, setStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
+  const lastUserPromptRef = useRef<string>("");
+
   const ask = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || streaming) return;
+    lastUserPromptRef.current = trimmed;
     const next: Msg[] = [
       ...messages,
       { role: "user", content: trimmed },
@@ -64,31 +72,41 @@ export function AssistantChat({ buildingId }: { buildingId: string }) {
             return copy;
           });
         },
-        ctrl.signal,
+        { signal: ctrl.signal },
       );
     } catch (e) {
+      if (ctrl.signal.aborted && !abortRef.current) return;
+      const message =
+        e instanceof Error
+          ? e.message
+          : "The assistant didn't respond. Please try again.";
       setMessages((prev) => {
         const copy = [...prev];
         const last = copy[copy.length - 1];
-        if (last && last.role === "assistant" && !last.content) {
-          copy[copy.length - 1] = {
-            role: "assistant",
-            content:
-              "Sorry — I couldn't reach the assistant. Is the backend running?",
-          };
+        if (last && last.role === "assistant") {
+          copy[copy.length - 1] = { ...last, error: message };
         }
         return copy;
       });
       console.error(e);
     } finally {
       setStreaming(false);
+      abortRef.current = null;
     }
+  };
+
+  const retryLast = () => {
+    if (streaming) return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant" || !last.error) return;
+    setMessages((prev) => prev.slice(0, -2));
+    void ask(lastUserPromptRef.current);
   };
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-        <div className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-[color-mix(in_srgb,var(--color-primary)_40%,transparent)] to-[color-mix(in_srgb,var(--color-cyan)_30%,transparent)] text-[var(--color-primary-glow)]">
+      <header className="flex items-center gap-2.5 border-b border-[var(--color-border)] px-4 py-3">
+        <div className="grid h-8 w-8 place-items-center rounded-md border border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))] bg-[var(--color-bg)] text-[var(--color-primary-glow)]">
           <Sparkles className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0">
@@ -109,6 +127,14 @@ export function AssistantChat({ buildingId }: { buildingId: string }) {
             msg={m}
             streaming={
               streaming && i === messages.length - 1 && m.role === "assistant"
+            }
+            onRetry={
+              i === messages.length - 1 &&
+              m.role === "assistant" &&
+              m.error &&
+              !streaming
+                ? retryLast
+                : undefined
             }
           />
         ))}
@@ -157,11 +183,14 @@ export function AssistantChat({ buildingId }: { buildingId: string }) {
 function MessageBubble({
   msg,
   streaming,
+  onRetry,
 }: {
   msg: Msg;
   streaming: boolean;
+  onRetry?: () => void;
 }) {
   const isUser = msg.role === "user";
+  const hasError = Boolean(msg.error);
   return (
     <motion.div
       initial={{ opacity: 0, y: 4 }}
@@ -169,17 +198,68 @@ function MessageBubble({
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       className={cn("max-w-[85%]", isUser && "ml-auto")}
     >
-      <div
-        className={cn(
-          "rounded-[var(--r-md)] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap",
-          isUser
-            ? "bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-cyan)] text-white shadow-[var(--shadow-glow-violet)]"
-            : "border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-ink)]",
-        )}
-      >
-        {msg.content || (msg.role === "assistant" ? <TypingDots /> : "")}
-      </div>
-      {!isUser && msg.content && (
+      {!isUser && hasError && !msg.content && (
+        <div className="rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--color-fail)_40%,transparent)] bg-[color-mix(in_srgb,var(--color-fail)_10%,transparent)] px-3 py-2 text-sm leading-relaxed text-[var(--color-ink)]">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--color-fail)]" />
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-[var(--color-fail)]">
+                Couldn't get an answer
+              </div>
+              <div className="mt-0.5 text-[12px] text-[var(--color-ink-muted)] break-words">
+                {msg.error}
+              </div>
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-2.5 py-1 text-[11px] text-[var(--color-ink-muted)] transition-colors hover:border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))] hover:text-[var(--color-primary-glow)]"
+                >
+                  <RefreshCw className="h-3 w-3" /> Try again
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {(isUser || msg.content || (!hasError && !isUser)) && (
+        <div
+          className={cn(
+            "rounded-[var(--r-md)] px-3 py-2 text-sm leading-relaxed",
+            isUser
+              ? "whitespace-pre-wrap bg-[var(--color-primary)] text-white"
+              : "border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-ink)]",
+          )}
+        >
+          {isUser ? (
+            msg.content
+          ) : msg.content ? (
+            // Mid-stream content can have unbalanced markdown tokens; render
+            // as plain text while streaming, only render Markdown when settled.
+            streaming ? (
+              <span className="whitespace-pre-wrap">{msg.content}</span>
+            ) : (
+              <Markdown>{msg.content}</Markdown>
+            )
+          ) : (
+            <TypingDots />
+          )}
+        </div>
+      )}
+      {!isUser && msg.content && hasError && (
+        <div className="mt-1.5 flex items-center gap-2 rounded-[var(--r-md)] border border-[color-mix(in_srgb,var(--color-warn)_30%,transparent)] bg-[color-mix(in_srgb,var(--color-warn)_10%,transparent)] px-2.5 py-1.5 text-[11px] text-[var(--color-ink-muted)]">
+          <AlertTriangle className="h-3 w-3 text-[var(--color-warn)]" />
+          <span className="flex-1">Reply was cut short — {msg.error}</span>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="inline-flex items-center gap-1 text-[var(--color-cyan)] hover:text-[var(--color-primary-glow)]"
+            >
+              <RefreshCw className="h-3 w-3" /> retry
+            </button>
+          )}
+        </div>
+      )}
+      {!isUser && msg.content && !hasError && (
         <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--color-ink-subtle)] font-mono">
           <span className="inline-block h-1 w-1 rounded-full bg-[var(--color-cyan)]" />
           grounded · profile + content docs

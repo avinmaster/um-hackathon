@@ -6,8 +6,7 @@ import { cn } from "../../lib/cn";
 
 const cellTone: Record<StepStatus, string> = {
   pending: "bg-[var(--color-bg-raised)] hover:bg-[var(--color-border-strong)]",
-  running:
-    "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-glow)]",
+  running: "bg-[var(--color-primary)]",
   awaiting_user: "bg-[var(--color-warn)]",
   passed: "bg-[var(--color-accent)]",
   failed: "bg-[var(--color-fail)]",

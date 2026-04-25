@@ -59,7 +59,7 @@ export function TopBar({
     >
       <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="ring-gradient-brand h-7 w-7 rounded-md grid place-items-center text-[var(--color-primary-glow)] font-bold text-sm transition-transform duration-300 group-hover:rotate-[8deg]">
+          <div className="ring-brand h-7 w-7 rounded-md grid place-items-center text-[var(--color-primary-glow)] font-bold text-sm transition-transform duration-300 group-hover:rotate-[8deg]">
             O
           </div>
           <div className="flex items-baseline gap-2">
@@ -77,13 +77,10 @@ export function TopBar({
       </div>
       {/* scroll progress underline */}
       <motion.div
-        className="absolute bottom-0 left-0 h-[2px] origin-left"
+        className="absolute bottom-0 left-0 h-[2px] origin-left bg-[var(--color-primary)]"
         style={{
           width: "100%",
           scaleX: progressX,
-          background:
-            "linear-gradient(90deg, var(--color-primary) 0%, var(--color-cyan) 100%)",
-          boxShadow: "0 0 8px var(--color-cyan)",
         }}
       />
     </motion.header>

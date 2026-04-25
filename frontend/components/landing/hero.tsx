@@ -54,7 +54,7 @@ export function Hero() {
         <h1 className="relative text-balance text-[clamp(2.4rem,6vw,4.6rem)] font-semibold leading-[1.05] tracking-tight">
           <StaggeredHeadline words={HEADLINE_LINE_1} />
           <br />
-          <span className="text-gradient-brand">
+          <span className="text-[var(--color-primary-glow)]">
             <StaggeredHeadline words={HEADLINE_LINE_2} startDelay={0.35} />
           </span>
           <DrawPath

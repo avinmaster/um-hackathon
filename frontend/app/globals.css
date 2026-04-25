@@ -213,20 +213,16 @@ body {
   animation: drift-y 36s linear infinite;
 }
 
-/* utility — gradient text */
-.text-gradient-brand {
-  background: linear-gradient(135deg, var(--color-primary-glow) 0%, var(--color-cyan) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* utility — solid brand text accent (was a gradient — kept the class so
+   existing usages still get a single tasteful color) */
+.text-brand-accent {
+  color: var(--color-primary-glow);
 }
 
-/* utility — gradient ring (used on logo) */
-.ring-gradient-brand {
-  background:
-    linear-gradient(var(--color-bg), var(--color-bg)) padding-box,
-    linear-gradient(135deg, var(--color-primary), var(--color-cyan)) border-box;
-  border: 1px solid transparent;
+/* utility — solid logo ring */
+.ring-brand {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 65%, var(--color-border-strong));
+  background: var(--color-bg-elev);
 }
 
 /* glassmorphism panel */

@@ -21,7 +21,7 @@ export function ClosingCTA() {
         </span>
         <h2 className="text-balance text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.05] tracking-tight">
           One engine.{" "}
-          <span className="text-gradient-brand">Six primitives.</span>
+          <span className="text-[var(--color-primary-glow)]">Six primitives.</span>
           <br />
           Every city by config.
         </h2>
