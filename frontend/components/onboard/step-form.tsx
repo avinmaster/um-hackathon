@@ -58,8 +58,8 @@ export function StepForm({
       }}
       className="grid gap-4"
     >
-      {fields.map((f) => (
-        <div key={f.name}>
+      {fields.map((f, i) => (
+        <div key={f.name || `field-${i}`}>
           <Label htmlFor={f.name}>
             {f.label || f.name}
             {f.required ? <span className="text-[var(--color-fail)]"> *</span> : null}
