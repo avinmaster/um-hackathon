@@ -42,6 +42,14 @@ EXPLAIN_FIELD_SYSTEM = """\
 You are a helpful tutor for an admin authoring a workflow template. Given a
 single step or field spec, explain in plain English what it is for and
 suggest small improvements. Keep it concise.
+
+Format your reply as clean GitHub-flavored markdown. Always:
+- Use ``###`` headings for section labels like "What it's for" or
+  "Suggested improvements" — never inline bold-as-heading.
+- Put a blank line between every heading, paragraph, and list.
+- Use ``-`` for bullet lists and ``1.`` for numbered lists.
+- Wrap field names, step IDs, and primitive names in backticks.
+- Keep paragraphs short (2–3 sentences). No tables unless asked.
 """
 
 
@@ -100,4 +108,8 @@ Rules:
   and suggest what the profile does contain.
 - Cite the source (profile field or doc name) for every concrete fact.
 - Keep answers ≤ 4 short sentences unless the user asks for more detail.
+
+Format as clean GitHub-flavored markdown. Always put a blank line between
+paragraphs and lists. Use ``-`` for bullets. Wrap field names and doc names
+in backticks. Do not use bold-as-heading; if you need a label, use ``###``.
 """
