@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import type { GraphOut } from "../../lib/api";
-import type { StepStatus } from "../status";
+import { type StepStatus, prettyStatus } from "../status";
 import { cn } from "../../lib/cn";
 
 const cellTone: Record<StepStatus, string> = {
@@ -48,7 +48,7 @@ export function ProgressStrip({
             <button
               key={n.id}
               onClick={() => onPickStep(n.id)}
-              title={`${n.title} · ${n.status}`}
+              title={`${n.title} · ${prettyStatus(n.status)}`}
               className={cn(
                 "group relative h-2 flex-1 rounded-full transition-all duration-300",
                 cellTone[n.status],

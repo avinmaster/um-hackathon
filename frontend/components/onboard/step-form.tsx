@@ -16,11 +16,13 @@ export function StepForm({
   onSubmit,
   submitting,
   prefill,
+  submitLabel,
 }: {
   fields: Field[];
   onSubmit: (values: Record<string, unknown>) => Promise<void> | void;
   submitting?: boolean;
   prefill?: Record<string, unknown>;
+  submitLabel?: string;
 }) {
   const [values, setValues] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
@@ -75,7 +77,7 @@ export function StepForm({
       ))}
       <div>
         <Button type="submit" disabled={missing.length > 0 || submitting}>
-          {submitting ? "Submitting…" : "Submit step"}
+          {submitting ? "Submitting…" : submitLabel || "Submit step"}
         </Button>
         {missing.length > 0 && (
           <p className="mt-2 text-xs text-[var(--color-ink-muted)]">

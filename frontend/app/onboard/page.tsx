@@ -23,7 +23,7 @@ import {
   type City,
   type Template,
 } from "../../lib/api";
-import { primitiveLabel } from "../../components/status";
+import { primitiveLabel, prettyStatus } from "../../components/status";
 
 export default function OnboardIndex() {
   const router = useRouter();
@@ -250,10 +250,10 @@ function TemplatePreview({ template }: { template: Template | null }) {
           <Badge tone={template.status === "published" ? "accent" : "neutral"}>
             {template.status === "published" ? (
               <>
-                <CheckCircle2 className="h-3 w-3" /> live
+                <CheckCircle2 className="h-3 w-3" /> Live
               </>
             ) : (
-              "draft"
+              "Draft"
             )}
           </Badge>
         </div>
@@ -299,7 +299,7 @@ function BuildingRow({ b }: { b: BuildingT }) {
           {b.address || "no address"}
         </div>
       </div>
-      <Badge tone={statusTone(b.status)}>{b.status}</Badge>
+      <Badge tone={statusTone(b.status)}>{prettyStatus(b.status)}</Badge>
       <ChevronRight className="h-3.5 w-3.5 text-[var(--color-ink-subtle)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--color-ink)]" />
     </Link>
   );

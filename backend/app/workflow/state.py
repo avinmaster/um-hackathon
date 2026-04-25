@@ -72,6 +72,10 @@ class RunState(TypedDict, total=False):
     user_prompt: str | None
     # pending input submitted by the user for the current step; consumed on resume
     pending_input: Annotated[dict[str, Any], _merge_dict]
+    # bumped by rewind_run; suffixes the LangGraph thread_id so a fresh
+    # checkpoint thread is used after rewinding instead of resuming from the
+    # old paused position.
+    rewind_rev: int
     # terminal state
     published: bool
 
@@ -97,5 +101,6 @@ def new_run_state(
         awaiting_step_id=None,
         user_prompt=None,
         pending_input={},
+        rewind_rev=0,
         published=False,
     )

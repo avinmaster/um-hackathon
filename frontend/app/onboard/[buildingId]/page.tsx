@@ -7,6 +7,7 @@ import { WorkflowCanvas } from "../../../components/onboard/workflow-canvas";
 import { StepPanel } from "../../../components/onboard/step-panel";
 import { ProgressStrip } from "../../../components/onboard/progress-strip";
 import { Badge } from "../../../components/ui/badge";
+import { prettyStatus } from "../../../components/status";
 import {
   api,
   type Building,
@@ -27,6 +28,7 @@ export default function OnboardRunPage({
   const [run, setRun] = useState<RunState | null>(null);
   const [graph, setGraph] = useState<GraphOut | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
 
@@ -89,11 +91,23 @@ export default function OnboardRunPage({
     (next: RunState) => {
       setRun(next);
       void api.getGraph(buildingId).then(setGraph);
+      if (next.status === "completed") {
+        // Publish landed — jump focus to the publish step so the owner
+        // sees the success state instead of staying on the now-stale
+        // review summary.
+        const publishStep =
+          template?.steps.find((s) => s.primitive === "publish") ??
+          template?.steps[template.steps.length - 1];
+        if (publishStep) {
+          setPicked(publishStep.id);
+          return;
+        }
+      }
       if (!picked || picked !== next.current_step_id) {
         setPicked(next.current_step_id ?? picked);
       }
     },
-    [buildingId, picked],
+    [buildingId, picked, template],
   );
 
   const pickedStep = useMemo<TemplateStep | null>(() => {
@@ -104,7 +118,7 @@ export default function OnboardRunPage({
   return (
     <>
       <TopBar current="onboard" />
-      <main className="flex min-h-0 flex-1 flex-col">
+      <main className="flex min-h-0 flex-1 flex-col lg:h-[calc(100dvh-60px)] lg:flex-none lg:overflow-hidden">
         <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)]">
           <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-end justify-between gap-4 px-6 py-4">
             <div className="min-w-0">
@@ -164,7 +178,7 @@ export default function OnboardRunPage({
         )}
 
         <div className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
-          <div className="relative h-[420px] lg:h-auto border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
+          <div className="relative h-[420px] lg:h-auto lg:min-h-0 lg:overflow-hidden border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
             {graph ? (
               <WorkflowCanvas
                 graph={graph}
@@ -195,13 +209,20 @@ export default function OnboardRunPage({
               </div>
             )}
           </div>
-          <div className="min-h-0 bg-[var(--color-bg-elev)]">
+          <div className="min-h-0 overflow-hidden bg-[var(--color-bg-elev)]">
             {run && pickedStep && (
               <StepPanel
                 buildingId={buildingId}
                 run={run}
                 step={pickedStep}
+                steps={template?.steps}
                 onChange={onStateChange}
+                editingStepId={editingStepId}
+                startEdit={(id) => {
+                  setEditingStepId(id);
+                  setPicked(id);
+                }}
+                cancelEdit={() => setEditingStepId(null)}
               />
             )}
             {!run && !error && (
@@ -252,7 +273,7 @@ function RunPulse({ run }: { run: RunState }) {
           <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 pulse-dot" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
         </span>
-        {run.status}
+        {prettyStatus(run.status)}
       </Badge>
       <span className="font-mono text-[11px] text-[var(--color-ink-muted)]">
         run · {run.run_id.slice(0, 8)}

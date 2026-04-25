@@ -62,11 +62,23 @@ def upload_compliance_factory(step: dict[str, Any]) -> Callable[[RunState], dict
             extract_prompt = (
                 f"Expected doc_type: {doc_type}.\n"
                 f"Fields of interest: {', '.join(extract_fields) or '(free-form)'}.\n\n"
+                "You MUST populate `fields` with at least 3 concrete entries "
+                "drawn verbatim from the document text. Use the field names "
+                "above when present in the document; otherwise use descriptive "
+                "snake_case keys. Never return an empty `fields` object — if "
+                "you cannot find the requested fields, extract whatever "
+                "concrete facts the document actually states.\n\n"
                 f"Document text:\n{text[:30000]}"
             )
             extracted = client.call_tool(
                 messages=[
-                    {"role": "system", "content": "Extract building facts from the document text."},
+                    {
+                        "role": "system",
+                        "content": (
+                            "Extract building facts from the document text. The "
+                            "`fields` object is required and must be non-empty."
+                        ),
+                    },
                     {"role": "user", "content": extract_prompt},
                 ],
                 tool_spec=EXTRACT_DOCUMENT,

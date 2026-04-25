@@ -53,6 +53,10 @@ def upload_content_factory(step: dict[str, Any]) -> Callable[[RunState], dict[st
             text = doc.get("text") or ""
             prompt = (
                 f"Fields of interest: {', '.join(extract_fields) or '(free-form)'}.\n\n"
+                "You MUST populate `fields` with at least 3 concrete entries "
+                "drawn from the document text. Use the field names listed "
+                "above when possible; otherwise pick descriptive snake_case "
+                "names. Do not return an empty `fields` object.\n\n"
                 f"Document:\n{text[:30000]}"
             )
             extracted = client.call_tool(
@@ -61,7 +65,8 @@ def upload_content_factory(step: dict[str, Any]) -> Callable[[RunState], dict[st
                         "role": "system",
                         "content": (
                             "Extract facts from a content document for a public building listing. "
-                            "Structured, concise, and grounded in the text."
+                            "Structured, concise, grounded in the text. The `fields` object is "
+                            "required and must be non-empty."
                         ),
                     },
                     {"role": "user", "content": prompt},
@@ -87,7 +92,15 @@ def upload_content_factory(step: dict[str, Any]) -> Callable[[RunState], dict[st
             )
 
         return {
-            "step_outputs": {step_id: {"extracted": [d["extracted"] for d in uploaded_docs]}},
+            "step_outputs": {
+                step_id: {
+                    # Content uploads have no pass/fail verdict; mark passed
+                    # so the run treats the step as complete (no verification
+                    # is by design — see SUMMARIZE_FOR_REVIEW_SYSTEM).
+                    "passed": True,
+                    "extracted": [d["extracted"] for d in uploaded_docs],
+                }
+            },
             "uploaded_docs": uploaded_docs,
             "profile_draft": profile_patch,
             "decision_log": decisions,

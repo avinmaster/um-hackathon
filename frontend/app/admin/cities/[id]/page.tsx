@@ -215,10 +215,10 @@ export default function AdminCityPage({
                 <Badge tone={active.status === "published" ? "accent" : "neutral"}>
                   {active.status === "published" ? (
                     <>
-                      <CheckCircle2 className="h-3 w-3" /> published
+                      <CheckCircle2 className="h-3 w-3" /> Published
                     </>
                   ) : (
-                    "draft"
+                    "Draft"
                   )}
                 </Badge>
                 <span className="text-[var(--color-ink-subtle)]">

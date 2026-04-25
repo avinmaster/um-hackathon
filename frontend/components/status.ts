@@ -18,8 +18,13 @@ export const statusTone = (s: StepStatus) => {
   }
 };
 
-export const statusLabel = (s: StepStatus) =>
-  s === "awaiting_user" ? "awaiting you" : s;
+export const prettyStatus = (s: string): string =>
+  s
+    .split("_")
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+
+export const statusLabel = (s: StepStatus) => prettyStatus(s);
 
 export const primitiveLabel: Record<Primitive, string> = {
   collect_form: "Form",

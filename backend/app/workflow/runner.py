@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import json
 import logging
+import time
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -113,7 +115,7 @@ def tick(db: Session, *, run_id: str, submit: dict[str, Any] | None = None) -> R
 
     with get_checkpointer() as checkpointer:
         app = compile_template(steps, checkpointer=checkpointer)
-        config = {"configurable": {"thread_id": run.id}}
+        config = {"configurable": {"thread_id": _thread_id(run.id, state.get("rewind_rev") or 0)}}
         try:
             final_state = app.invoke(state, config=config)
         except Exception as e:
@@ -197,3 +199,209 @@ def _persist_step_runs(db: Session, run: WorkflowRun, state: dict[str, Any]) -> 
             sr.status = "running"
 
 
+def _thread_id(run_id: str, rev: int) -> str:
+    """LangGraph thread key. Rewinding bumps ``rev`` so the new run uses a
+    fresh checkpoint thread instead of resuming the old paused position."""
+    return run_id if not rev else f"{run_id}#r{rev}"
+
+
+def rewind_run(db: Session, *, run_id: str, target_step_id: str) -> RunSnapshot:
+    """Reopen ``target_step_id`` for editing, discarding it + downstream output.
+
+    Clears outputs, pending input, verification results, and uploaded docs
+    for the target step and every later step (by template order). Bumps
+    ``rewind_rev`` so the next ``tick()`` runs on a fresh checkpoint thread.
+    Earlier steps stay valid and short-circuit on their idempotency guards
+    when the run is re-invoked, leaving the run paused at the target.
+    """
+    run = db.get(WorkflowRun, run_id)
+    if run is None:
+        raise ValueError(f"run {run_id} not found")
+    if run.status == "completed":
+        raise ValueError("cannot rewind a completed run")
+
+    tpl = db.get(WorkflowTemplate, run.template_id)
+    if tpl is None:
+        raise ValueError(f"template {run.template_id} not found")
+    steps = _steps_of(tpl)
+
+    step_ids = [s["id"] for s in steps]
+    if target_step_id not in step_ids:
+        raise ValueError(f"unknown step_id {target_step_id}")
+    target_idx = step_ids.index(target_step_id)
+    cleared = set(step_ids[target_idx:])
+
+    state = dict(_run_state_from_db(run))
+
+    step_outputs = {k: v for k, v in (state.get("step_outputs") or {}).items() if k not in cleared}
+    pending_input = {k: v for k, v in (state.get("pending_input") or {}).items() if k not in cleared}
+    verification_results = [
+        v for v in (state.get("verification_results") or []) if v.get("step_id") not in cleared
+    ]
+    uploaded_docs = [
+        d for d in (state.get("uploaded_docs") or []) if d.get("step_id") not in cleared
+    ]
+
+    decision_log = list(state.get("decision_log") or [])
+    decision_log.append(
+        {
+            "step_id": target_step_id,
+            "call_id": f"rewind-{uuid.uuid4().hex[:8]}",
+            "tool": "rewind",
+            "request": {"target": target_step_id, "cleared": sorted(cleared)},
+            "response": {},
+            "duration_ms": 0,
+            "ts": time.time(),
+        }
+    )
+
+    state.update(
+        step_outputs=step_outputs,
+        pending_input=pending_input,
+        verification_results=verification_results,
+        uploaded_docs=uploaded_docs,
+        decision_log=decision_log,
+        rewind_rev=int(state.get("rewind_rev") or 0) + 1,
+        awaiting_user=False,
+        awaiting_step_id=None,
+        user_prompt=None,
+        published=False,
+    )
+
+    db.query(StepRun).filter(StepRun.run_id == run.id, StepRun.step_id.in_(cleared)).delete(
+        synchronize_session=False
+    )
+
+    run.state = _serialise_state(state)
+    run.current_step_id = None
+    run.status = "running"
+    db.commit()
+
+    return tick(db, run_id=run.id)
+
+
+# Primitives whose output is purely derived from upstream state — they can
+# be re-executed without further user input. Editing any earlier step
+# invalidates these but leaves the user-driven steps (forms, uploads) intact.
+_RECOMPUTE_PRIMITIVES = {"cross_check", "human_review", "publish"}
+
+
+def apply_edit(
+    db: Session,
+    *,
+    run_id: str,
+    step_id: str,
+    form_input: dict[str, Any] | None = None,
+    doc_input: list[dict[str, Any]] | None = None,
+) -> RunSnapshot:
+    """In-place edit of one earlier step's input. Preserves every other
+    step's data; only re-runs the target step plus downstream
+    derived-from-state steps (cross_check, human_review, publish).
+
+    Use this instead of ``rewind_run`` when the user wants to fix one
+    field or swap one document without losing the rest of their work.
+    """
+    run = db.get(WorkflowRun, run_id)
+    if run is None:
+        raise ValueError(f"run {run_id} not found")
+    if run.status == "completed":
+        raise ValueError("cannot edit a completed run")
+
+    tpl = db.get(WorkflowTemplate, run.template_id)
+    if tpl is None:
+        raise ValueError(f"template {run.template_id} not found")
+    steps = _steps_of(tpl)
+    step_ids = [s["id"] for s in steps]
+    if step_id not in step_ids:
+        raise ValueError(f"unknown step_id {step_id}")
+    target_idx = step_ids.index(step_id)
+    target = steps[target_idx]
+    target_primitive = target["primitive"]
+
+    if target_primitive == "collect_form":
+        if not form_input:
+            raise ValueError("form_input required for collect_form edit")
+    elif target_primitive in {"upload_compliance", "upload_content"}:
+        if not doc_input:
+            raise ValueError("doc_input required for upload edit")
+    else:
+        raise ValueError(f"cannot edit primitive {target_primitive}")
+
+    downstream_recompute = {
+        s["id"] for s in steps[target_idx + 1 :] if s["primitive"] in _RECOMPUTE_PRIMITIVES
+    }
+    # Any step we want to re-execute needs its output dropped so its
+    # idempotency guard doesn't short-circuit the next tick.
+    cleared_outputs = downstream_recompute | {step_id}
+    # The target step's old per-doc artefacts must go too, otherwise the
+    # `_extend` reducer would surface stale verdicts alongside fresh ones.
+    cleared_artefacts = {step_id}
+
+    state = dict(_run_state_from_db(run))
+
+    step_outputs = {
+        k: v
+        for k, v in (state.get("step_outputs") or {}).items()
+        if k not in cleared_outputs
+    }
+    pending_input = {
+        k: v
+        for k, v in (state.get("pending_input") or {}).items()
+        if k not in downstream_recompute
+    }
+    if target_primitive == "collect_form":
+        pending_input[step_id] = dict(form_input or {})
+    else:
+        pending_input[step_id] = {"docs": doc_input or []}
+
+    verification_results = [
+        v
+        for v in (state.get("verification_results") or [])
+        if v.get("step_id") not in cleared_artefacts
+    ]
+    uploaded_docs = [
+        d
+        for d in (state.get("uploaded_docs") or [])
+        if d.get("step_id") not in cleared_artefacts
+    ]
+
+    decision_log = list(state.get("decision_log") or [])
+    decision_log.append(
+        {
+            "step_id": step_id,
+            "call_id": f"edit-{uuid.uuid4().hex[:8]}",
+            "tool": "edit",
+            "request": {
+                "target": step_id,
+                "primitive": target_primitive,
+                "downstream_recomputed": sorted(downstream_recompute),
+            },
+            "response": {},
+            "duration_ms": 0,
+            "ts": time.time(),
+        }
+    )
+
+    state.update(
+        step_outputs=step_outputs,
+        pending_input=pending_input,
+        verification_results=verification_results,
+        uploaded_docs=uploaded_docs,
+        decision_log=decision_log,
+        rewind_rev=int(state.get("rewind_rev") or 0) + 1,
+        awaiting_user=False,
+        awaiting_step_id=None,
+        user_prompt=None,
+        published=False,
+    )
+
+    db.query(StepRun).filter(
+        StepRun.run_id == run.id, StepRun.step_id.in_(cleared_outputs)
+    ).delete(synchronize_session=False)
+
+    run.state = _serialise_state(state)
+    run.current_step_id = None
+    run.status = "running"
+    db.commit()
+
+    return tick(db, run_id=run.id)

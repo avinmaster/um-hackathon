@@ -79,23 +79,67 @@ Write one honest, plain-English summary sentence for the user.
 
 
 CROSS_CHECK_SYSTEM = """\
-You reconcile structured outputs from earlier onboarding steps. Given the
-outputs of several steps keyed by step id, list any contradictions with the
-two conflicting values and a short explanation.
+You reconcile structured outputs from earlier onboarding steps. Return only
+contradictions where two sources describe the SAME property of the building
+with materially different values. Compare like-for-like.
 
-- Ignore trivial formatting differences (e.g. "10" vs "ten").
-- Mark severity "major" if the contradiction blocks publication
-  (ownership/address/legal identity); otherwise "minor".
-- Return an empty contradictions list if the evidence is consistent.
+NOT contradictions (never list these):
+- A document's issue date or validity range vs the building's year built —
+  a 2014 building can have a 2024 fire safety re-cert; that's a routine
+  renewal, not a conflict.
+- The address of the issuing office vs the building's address.
+- The names of regulator officers signing a certificate vs the building's
+  owner name.
+- Trivial formatting differences (commas, abbreviations, honorifics,
+  "10" vs "ten", "Selangor" vs "Selangor Darul Ehsan").
+
+Severity:
+- "major" — blocks publication (ownership, address, legal identity,
+  building floor count, unit count).
+- "minor" — non-blocking discrepancy.
+
+If everything compared like-for-like is consistent, return an empty
+contradictions list. Silence is the right answer.
 """
 
 
 SUMMARIZE_FOR_REVIEW_SYSTEM = """\
 You produce the final pre-publication summary the building owner will
 confirm. Include: building basics, verification outcomes, and a preview of
-the public profile. Call out gaps that block publication.
+the public profile. Use concise markdown: short sections, bullets, no
+emojis.
 
-Use concise markdown: short sections, bullets, no emojis.
+Each entry in `gaps` MUST be a concrete, single-sentence description of a
+specific problem grounded in the actual data — name the field, the value
+the form shows, and the value the document shows. NEVER restate generic
+categories or rules.
+
+Good gap entry (concrete, references actual values):
+  "Floors: basics says 20 but Bomba certificate and MBSA approval both say 18."
+
+Bad gap entries — do NOT output anything that looks like these:
+  "A required basics field disagrees with an uploaded document."
+  "A compliance verification failed or is missing."
+  "An expected document type was never uploaded."
+
+A gap is real ONLY when:
+- A specific basics field disagrees with a specific regulator document on
+  the same property of the building (compare like-for-like values).
+- A specific upload_compliance verdict has `passed=false`.
+- A specific document type required by the template has zero uploads.
+
+NEVER treat these as gaps:
+- A content upload (upload_content) lacking a "passed" verdict — content
+  is for the public listing, not regulatory verification.
+- A small or sparse profile_draft — one content document is enough.
+- Stylistic differences (commas, abbreviations, "Selangor Darul Ehsan" vs
+  "Selangor").
+- A certificate's issue date or validity period vs the building's year
+  built (a 2014 building can hold a 2024-2027 fire safety certificate;
+  that is routine renewal, not a contradiction).
+
+If no concrete gap remains, return an empty `gaps` array and set
+`ready_to_publish` to true.
 """
 
 

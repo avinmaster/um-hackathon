@@ -244,6 +244,61 @@ ANSWER_VISITOR_QUESTION = _fn(
 )
 
 
+PROPOSE_AUTO_FIX = _fn(
+    "propose_auto_fix",
+    "Propose concrete corrections to previously-submitted form values to "
+    "resolve review gaps. Each correction must include the EXACT new value, "
+    "not just an explanation. Treat uploaded regulator documents (deeds, "
+    "Bomba certificates, MBSA approvals) as authoritative — when the form "
+    "disagrees, change the form value to match the document. Never propose "
+    "corrections to uploaded documents.",
+    {
+        "type": "object",
+        "properties": {
+            "field_changes": {
+                "type": "array",
+                "description": (
+                    "One entry per individual form field that needs to change. "
+                    "Only include fields whose value will actually change. "
+                    "If nothing needs to change, return an empty array."
+                ),
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "step_id": {
+                            "type": "string",
+                            "description": "The collect_form step that owns this field (e.g. 'basics').",
+                        },
+                        "field": {
+                            "type": "string",
+                            "description": "Field name within that step (e.g. 'address', 'floors').",
+                        },
+                        "new_value": {
+                            "description": "The corrected value, taken verbatim from the supporting document. Use the same JSON type the field expects (string, number, etc.).",
+                        },
+                        "reason": {
+                            "type": "string",
+                            "description": "1 sentence: which document supports this change.",
+                        },
+                    },
+                    "required": ["step_id", "field", "new_value", "reason"],
+                },
+            },
+            "explanation": {
+                "type": "string",
+                "description": "1–2 sentences summarising the changes for the owner.",
+            },
+            "unresolved": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Gaps that cannot be auto-fixed (e.g. genuinely missing documents).",
+            },
+        },
+        "required": ["field_changes", "explanation"],
+    },
+)
+
+
 TOOL_SPECS: dict[str, dict[str, Any]] = {
     "draft_template": DRAFT_TEMPLATE,
     "explain_field": EXPLAIN_FIELD,
@@ -252,6 +307,7 @@ TOOL_SPECS: dict[str, dict[str, Any]] = {
     "cross_check_documents": CROSS_CHECK_DOCUMENTS,
     "summarize_for_review": SUMMARIZE_FOR_REVIEW,
     "answer_visitor_question": ANSWER_VISITOR_QUESTION,
+    "propose_auto_fix": PROPOSE_AUTO_FIX,
 }
 
 

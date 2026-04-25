@@ -92,6 +92,13 @@ export type RunState = {
   };
 };
 
+export type DemoPreview =
+  | { primitive: "collect_form"; form_values: Record<string, unknown> }
+  | {
+      primitive: "upload_compliance" | "upload_content";
+      docs: Array<{ filename: string; mime: string; text: string; view_url: string }>;
+    };
+
 export type GraphOut = {
   nodes: Array<{
     id: string;
@@ -160,6 +167,44 @@ export const api = {
         body: JSON.stringify({ input }),
       },
     ),
+  rewindRun: (buildingId: string, stepId: string) =>
+    request<RunState>(
+      `/api/onboard/buildings/${buildingId}/run/rewind/${stepId}`,
+      { method: "POST" },
+    ),
+  autoFix: (buildingId: string) =>
+    request<RunState>(`/api/onboard/buildings/${buildingId}/run/auto-fix`, {
+      method: "POST",
+    }),
+  editFormStep: (buildingId: string, stepId: string, input: Record<string, unknown>) =>
+    request<RunState>(
+      `/api/onboard/buildings/${buildingId}/run/steps/${stepId}/edit-form`,
+      { method: "POST", body: JSON.stringify({ input }) },
+    ),
+  editUploadStep: async (buildingId: string, stepId: string, files: File[]) => {
+    const fd = new FormData();
+    for (const f of files) fd.append("files", f);
+    const res = await fetch(
+      `${API_BASE}/api/onboard/buildings/${buildingId}/run/steps/${stepId}/edit-upload`,
+      { method: "POST", body: fd, cache: "no-store" },
+    );
+    if (!res.ok) {
+      const t = await res.text().catch(() => res.statusText);
+      throw new Error(`${res.status} ${res.statusText}: ${t}`);
+    }
+    return (await res.json()) as RunState;
+  },
+  autofillStep: (buildingId: string, stepId: string) =>
+    request<RunState>(
+      `/api/onboard/buildings/${buildingId}/run/steps/${stepId}/autofill`,
+      { method: "POST" },
+    ),
+  getDemoPreview: (buildingId: string, stepId: string) =>
+    request<DemoPreview>(
+      `/api/onboard/buildings/${buildingId}/run/steps/${stepId}/demo-preview`,
+    ),
+  demoDocUrl: (filename: string) =>
+    `${API_BASE}/api/onboard/demo-docs/${encodeURIComponent(filename)}`,
   uploadStepDocs: async (buildingId: string, stepId: string, files: File[]) => {
     const fd = new FormData();
     for (const f of files) fd.append("files", f);
