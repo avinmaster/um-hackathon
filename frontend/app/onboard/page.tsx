@@ -1,18 +1,35 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  Building,
+  CheckCircle2,
+  ChevronRight,
+  Layers,
+  PlayCircle,
+} from "lucide-react";
 import { TopBar } from "../../components/nav/topbar";
-import { Card, CardBody, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input, Label } from "../../components/ui/input";
+import { PageHeader } from "../../components/ui/page-header";
+import { EmptyState } from "../../components/ui/empty-state";
+import { Field, Select } from "../../components/ui/field";
 import { Badge } from "../../components/ui/badge";
-import { api, type Building, type City } from "../../lib/api";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import {
+  api,
+  type Building as BuildingT,
+  type City,
+  type Template,
+} from "../../lib/api";
+import { primitiveLabel } from "../../components/status";
 
 export default function OnboardIndex() {
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
-  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [buildings, setBuildings] = useState<BuildingT[]>([]);
   const [form, setForm] = useState({ name: "", address: "", city_id: "" });
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -29,6 +46,24 @@ export default function OnboardIndex() {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Lookup the active template for the selected city so the form can preview
+  // the steps the owner is about to run.
+  useEffect(() => {
+    if (!form.city_id) return;
+    void api
+      .listTemplates(form.city_id)
+      .then((ts) => setTemplates(ts))
+      .catch(() => setTemplates([]));
+  }, [form.city_id]);
+
+  const activeTemplate = useMemo(
+    () =>
+      templates.find((t) => t.status === "published") ??
+      templates[0] ??
+      null,
+    [templates],
+  );
 
   const submit = async () => {
     setError(null);
@@ -48,110 +83,237 @@ export default function OnboardIndex() {
   return (
     <>
       <TopBar current="onboard" />
-      <main className="mx-auto w-full max-w-[1400px] flex-1 px-6 py-10 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8">
-        <section>
-          <div className="mb-6">
-            <Badge tone="brand">Owner workspace</Badge>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-              Start onboarding a new building
-            </h1>
-            <p className="mt-2 text-[var(--color-ink-muted)]">
-              Pick a city — its template takes over from there. Every AI
-              decision is visible on the canvas and logged per step.
-            </p>
-          </div>
+      <main className="flex-1">
+        <PageHeader
+          eyebrow={
+            <>
+              <Building className="h-3 w-3 text-[var(--color-primary)]" />
+              Owner
+            </>
+          }
+          title="Submit a building"
+          lede="Pick the city, name your building, start. The city decides the steps."
+        />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>New building</CardTitle>
-            </CardHeader>
-            <CardBody className="grid gap-4">
-              <div>
-                <Label htmlFor="bn">Building name</Label>
-                <Input
-                  id="bn"
-                  placeholder="e.g. Menara Demo"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
+        <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 px-6 py-10 lg:grid-cols-[1.1fr_1fr]">
+          {/* LEFT — start a new run */}
+          <section className="flex flex-col gap-5">
+            <div className="rounded-[var(--r-lg)] border border-[var(--color-border)] bg-[var(--color-bg-elev)]">
+              <div className="flex items-start gap-3 border-b border-[var(--color-border)] px-5 py-4">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-primary)]">
+                  <PlayCircle className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[15px] font-semibold tracking-tight">
+                    New submission
+                  </div>
+                  <p className="mt-0.5 text-[12px] leading-relaxed text-[var(--color-ink-muted)]">
+                    Once every step passes, your building goes live in the
+                    public directory.
+                  </p>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="ba">Address</Label>
-                <Input
-                  id="ba"
-                  placeholder="12 Jalan Demo, Shah Alam"
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="bc">City</Label>
-                <select
-                  id="bc"
-                  value={form.city_id}
-                  onChange={(e) => setForm({ ...form, city_id: e.target.value })}
-                  className="h-10 w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-all focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
+
+              <div className="grid gap-4 p-5">
+                <Field
+                  label="City"
+                  htmlFor="bc"
+                  help="Picks which workflow runs."
+                  required
                 >
-                  {cities.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}, {c.country}
-                    </option>
-                  ))}
-                </select>
+                  <Select
+                    id="bc"
+                    value={form.city_id}
+                    onChange={(e) =>
+                      setForm({ ...form, city_id: e.target.value })
+                    }
+                  >
+                    {cities.length === 0 && (
+                      <option value="">— no cities yet —</option>
+                    )}
+                    {cities.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                        {c.region ? `, ${c.region}` : ""}, {c.country}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field
+                    label="Building name"
+                    htmlFor="bn"
+                    help="Public name."
+                    required
+                  >
+                    <Input
+                      id="bn"
+                      placeholder="e.g. Menara Demo"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field
+                    label="Address"
+                    htmlFor="ba"
+                    hint="optional"
+                  >
+                    <Input
+                      id="ba"
+                      placeholder="12 Jalan Demo, Shah Alam"
+                      value={form.address}
+                      onChange={(e) =>
+                        setForm({ ...form, address: e.target.value })
+                      }
+                    />
+                  </Field>
+                </div>
+
+                {error && (
+                  <p className="text-[12px] text-[var(--color-fail)]">
+                    {error}
+                  </p>
+                )}
               </div>
-              {error && (
-                <p className="text-sm text-[var(--color-fail)]">{error}</p>
-              )}
-              <div className="pt-1">
-                <Button onClick={submit} disabled={!form.name || !form.city_id || pending}>
-                  {pending ? "Starting…" : "Start workflow"}
+
+              <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_50%,transparent)] px-5 py-3">
+                <span className="text-[12px] text-[var(--color-ink-subtle)]">
+                  You can pause and resume anytime.
+                </span>
+                <Button
+                  onClick={submit}
+                  disabled={!form.name || !form.city_id || pending}
+                >
+                  {pending ? "Starting…" : "Start"}
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
-            </CardBody>
-          </Card>
-        </section>
+            </div>
 
-        <section>
-          <h2 className="text-lg font-semibold tracking-tight mb-3">Your buildings</h2>
-          {buildings.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-[var(--color-border)] p-10 text-center text-sm text-[var(--color-ink-subtle)]">
-              Nothing onboarded yet. Start a new one →
+            <TemplatePreview template={activeTemplate} />
+          </section>
+
+          {/* RIGHT — your buildings */}
+          <section className="flex flex-col gap-3">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-[15px] font-semibold tracking-tight">
+                Your buildings
+              </h2>
+              <span className="text-[11px] text-[var(--color-ink-subtle)]">
+                {buildings.length} total
+              </span>
             </div>
-          ) : (
-            <div className="grid gap-3">
-              {buildings.map((b) => (
-                <Link
-                  key={b.id}
-                  href={`/onboard/${b.id}`}
-                  className="group flex items-center justify-between rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elev)] p-4 hover:border-[var(--color-border-strong)] transition-colors"
-                >
-                  <div>
-                    <div className="font-medium">{b.name}</div>
-                    <div className="text-xs text-[var(--color-ink-muted)] mt-1">
-                      {b.address || "no address"}
-                    </div>
-                  </div>
-                  <Badge tone={buildingTone(b.status)}>{b.status}</Badge>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+            {buildings.length === 0 ? (
+              <EmptyState
+                icon={Building}
+                title="No buildings yet"
+                body="Once you start, it shows up here so you can pick up where you left off."
+              />
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {buildings.map((b) => (
+                  <li key={b.id}>
+                    <BuildingRow b={b} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </main>
     </>
   );
 }
 
-function buildingTone(s: Building["status"]) {
+function TemplatePreview({ template }: { template: Template | null }) {
+  if (!template) {
+    return (
+      <div className="rounded-[var(--r-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg-elev)] px-5 py-4">
+        <div className="flex items-center gap-2 text-[12px] text-[var(--color-ink-muted)]">
+          <Layers className="h-3.5 w-3.5" />
+          This city has no workflow yet — an admin needs to build one first.
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg-elev)]">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 py-3">
+        <div className="flex items-center gap-2">
+          <Layers className="h-3.5 w-3.5 text-[var(--color-primary)]" />
+          <span className="text-[12px] font-medium">
+            Steps you'll take
+          </span>
+          <Badge tone={template.status === "published" ? "accent" : "neutral"}>
+            {template.status === "published" ? (
+              <>
+                <CheckCircle2 className="h-3 w-3" /> live
+              </>
+            ) : (
+              "draft"
+            )}
+          </Badge>
+        </div>
+        <span className="font-mono text-[10px] text-[var(--color-ink-subtle)]">
+          {template.steps.length} step
+          {template.steps.length === 1 ? "" : "s"}
+        </span>
+      </div>
+      <ol className="divide-y divide-[var(--color-border)]">
+        {template.steps.map((s, i) => (
+          <li
+            key={s.id}
+            className="flex items-center gap-3 px-5 py-2.5 text-[13px]"
+          >
+            <span className="font-mono text-[10px] text-[var(--color-ink-subtle)] w-6">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="flex-1 truncate">{s.title}</span>
+            <span className="font-mono text-[10px] text-[var(--color-ink-muted)]">
+              {primitiveLabel[s.primitive]}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function BuildingRow({ b }: { b: BuildingT }) {
+  return (
+    <Link
+      href={`/onboard/${b.id}`}
+      className="group flex items-center gap-3 rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg-elev)] px-4 py-3 transition-colors hover:border-[var(--color-border-strong)]"
+    >
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-ink-muted)] transition-colors group-hover:text-[var(--color-primary)]">
+        <Building className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[14px] font-medium text-[var(--color-ink)]">
+          {b.name}
+        </div>
+        <div className="truncate text-[12px] text-[var(--color-ink-muted)]">
+          {b.address || "no address"}
+        </div>
+      </div>
+      <Badge tone={statusTone(b.status)}>{b.status}</Badge>
+      <ChevronRight className="h-3.5 w-3.5 text-[var(--color-ink-subtle)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--color-ink)]" />
+    </Link>
+  );
+}
+
+function statusTone(s: BuildingT["status"]) {
   switch (s) {
     case "published":
+    case "verified":
       return "accent" as const;
     case "onboarding":
       return "info" as const;
     case "rejected":
       return "fail" as const;
-    case "verified":
-      return "accent" as const;
     default:
       return "neutral" as const;
   }

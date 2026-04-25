@@ -13,9 +13,9 @@ const NAV: Array<{
   key: Section;
   icon: typeof Layers;
 }> = [
-  { href: "/admin", label: "Author", key: "admin", icon: FileEdit },
-  { href: "/onboard", label: "Onboard", key: "onboard", icon: Layers },
-  { href: "/buildings", label: "Directory", key: "buildings", icon: Boxes },
+  { href: "/admin", label: "Workflows", key: "admin", icon: FileEdit },
+  { href: "/onboard", label: "Submit", key: "onboard", icon: Layers },
+  { href: "/buildings", label: "Browse", key: "buildings", icon: Boxes },
 ];
 
 export function TopBar({ current }: { current?: Section }) {
@@ -48,9 +48,6 @@ export function TopBar({ current }: { current?: Section }) {
           <Logo />
           <div className="flex items-baseline gap-2">
             <span className="font-semibold tracking-tight">Opus Magnum</span>
-            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-subtle)] sm:inline">
-              adaptive onboarding
-            </span>
           </div>
         </Link>
 

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { cn } from "../../lib/cn";
 
+const inputBase =
+  "w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-ink)] outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)] disabled:opacity-60";
+
 export const Input = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement>
@@ -8,10 +11,7 @@ export const Input = React.forwardRef<
   return (
     <input
       ref={ref}
-      className={cn(
-        "h-10 w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
-        className,
-      )}
+      className={cn(inputBase, "h-10 px-3", className)}
       {...props}
     />
   );
@@ -24,22 +24,26 @@ export const Textarea = React.forwardRef<
   return (
     <textarea
       ref={ref}
-      className={cn(
-        "w-full rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-3 text-sm outline-none transition-colors placeholder:text-[var(--color-ink-subtle)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
-        className,
-      )}
+      className={cn(inputBase, "min-h-[88px] p-3 leading-relaxed", className)}
       {...props}
     />
   );
 });
 
+/**
+ * Legacy Label — kept for compatibility. Prefer the <Field> wrapper from
+ * components/ui/field.tsx for new code.
+ */
 export function Label({
   className,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={`block text-xs font-medium uppercase tracking-wider text-[var(--color-ink-muted)] mb-1.5 ${className || ""}`}
+      className={cn(
+        "mb-1.5 block text-[12px] font-medium tracking-tight text-[var(--color-ink)]",
+        className,
+      )}
       {...props}
     />
   );

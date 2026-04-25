@@ -36,7 +36,7 @@ export function AssistantChat({
     {
       role: "assistant",
       content:
-        "Hi — I'm grounded in this building's profile and content documents. Ask me anything about the layout, amenities, or history.",
+        "Ask me anything about this building — layout, amenities, history. I answer from what was uploaded.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -130,12 +130,9 @@ export function AssistantChat({
           <Sparkles className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0">
-          <div className="text-sm font-semibold">Grounded assistant</div>
+          <div className="text-sm font-semibold">Ask the assistant</div>
           <div className="text-[10px] text-[var(--color-ink-subtle)]">
-            cites profile + content docs only · powered by{" "}
-            <span className="font-mono text-[var(--color-ink-muted)]">
-              ilmu-glm-5.1
-            </span>
+            answers come from this building's documents
           </div>
         </div>
       </header>
@@ -282,8 +279,8 @@ function MessageBubble({
       {!isUser && msg.content && !hasError && (
         <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--color-ink-subtle)] font-mono">
           <span className="inline-block h-1 w-1 rounded-full bg-[var(--color-cyan)]" />
-          grounded · profile + content docs
-          {streaming && <span className="text-[var(--color-cyan)]">streaming…</span>}
+          from the uploaded documents
+          {streaming && <span className="text-[var(--color-cyan)]">…</span>}
         </div>
       )}
     </motion.div>

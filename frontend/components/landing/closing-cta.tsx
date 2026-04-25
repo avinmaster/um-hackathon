@@ -31,14 +31,13 @@ export function ClosingCTA() {
         </span>
         <h2 className="text-balance text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-[1.05] tracking-tight">
           One engine.{" "}
-          <span className="text-[var(--color-primary-glow)]">Six primitives.</span>
+          <span className="text-[var(--color-primary-glow)]">Every city.</span>
           <br />
-          Every city by config.
+          By configuration.
         </h2>
-        <p className="mt-6 max-w-[560px] text-[var(--color-ink-muted)]">
-          Workflow templates are JSON in Postgres, compiled to LangGraph at run
-          start. Every GLM call is logged for audit. Remove GLM and the platform
-          stops reasoning — that's the architectural litmus test.
+        <p className="mt-6 max-w-[520px] text-[var(--color-ink-muted)]">
+          Workflows are stored as data, not code. Add a city, pick the steps,
+          publish. Owners follow the same flow you defined.
         </p>
 
         <div className="relative mt-10">
@@ -46,7 +45,7 @@ export function ClosingCTA() {
             href="/admin"
             className="group inline-flex items-center gap-3 rounded-md bg-[var(--color-primary)] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-deep)]"
           >
-            Author your first template
+            Build your first workflow
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
           <DrawPath

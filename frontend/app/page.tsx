@@ -23,12 +23,12 @@ export default function LandingPage() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-cyan)] opacity-50 pulse-dot" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-cyan)]" />
             </span>
-            Powered by ILMU ·{" "}
+            Built on{" "}
             <code className="font-mono text-[var(--color-ink-muted)]">
               ilmu-glm-5.1
             </code>
           </div>
-          <span>UMHackathon 2026 · Domain 1</span>
+          <span>UMHackathon 2026</span>
         </div>
       </footer>
     </>

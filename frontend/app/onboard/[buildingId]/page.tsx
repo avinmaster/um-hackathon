@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { TopBar } from "../../../components/nav/topbar";
 import { WorkflowCanvas } from "../../../components/onboard/workflow-canvas";
@@ -105,32 +105,39 @@ export default function OnboardRunPage({
     <>
       <TopBar current="onboard" />
       <main className="flex min-h-0 flex-1 flex-col">
-        <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)] px-6 py-4">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)]">
+          <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-end justify-between gap-4 px-6 py-4">
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-[11px] text-[var(--color-ink-subtle)]">
-                <Link
-                  href="/onboard"
-                  className="hover:text-[var(--color-ink)] transition-colors"
-                >
-                  onboarding
-                </Link>
-                <ChevronRight className="h-3 w-3" />
-                <span className="font-mono">{buildingId.slice(0, 8)}</span>
+              <Link
+                href="/onboard"
+                className="inline-flex items-center gap-1 text-[11px] text-[var(--color-ink-subtle)] transition-colors hover:text-[var(--color-ink)]"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                Submit
+              </Link>
+              <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                <h1 className="truncate text-xl font-semibold tracking-tight">
+                  {building?.name || "Building"}
+                </h1>
                 {pickedStep && (
                   <>
-                    <ChevronRight className="h-3 w-3" />
-                    <span className="text-[var(--color-ink-muted)] truncate">
+                    <ChevronRight className="h-3.5 w-3.5 text-[var(--color-ink-subtle)]" />
+                    <span className="text-sm text-[var(--color-ink-muted)] truncate">
                       {pickedStep.title}
                     </span>
                   </>
                 )}
               </div>
-              <h1 className="mt-1 truncate text-xl font-semibold tracking-tight">
-                {building?.name || "Building"}
-              </h1>
-              <p className="text-xs text-[var(--color-ink-muted)]">
+              <p className="mt-0.5 text-[12px] text-[var(--color-ink-muted)]">
                 {building?.address || "—"}
+                {run && (
+                  <>
+                    <span className="mx-2 text-[var(--color-ink-subtle)]">·</span>
+                    <span className="font-mono text-[11px]">
+                      run {run.run_id.slice(0, 8)}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
             <div className="flex items-center gap-3">

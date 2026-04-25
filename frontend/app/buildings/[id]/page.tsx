@@ -69,27 +69,35 @@ export default function BuildingVisitorPage({
   };
   const profile = (building.profile || {}) as Record<string, unknown>;
 
+  const sceneSummary = `${scene.floors} floors · ${scene.unit_count} units · ${Math.round(
+    scene.footprint_m2,
+  )} m²`;
+
   return (
     <>
       <TopBar current="buildings" />
       <main className="flex-1 flex flex-col min-h-0">
-        <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)] px-6 py-4">
-          <div className="flex items-center justify-between gap-6">
-            <div>
+        <div className="border-b border-[var(--color-border)] bg-[var(--color-bg-elev)]">
+          <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-end justify-between gap-4 px-6 py-4">
+            <div className="min-w-0">
               <Link
                 href="/buildings"
-                className="inline-flex items-center gap-1 text-xs text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)] transition-colors"
+                className="inline-flex items-center gap-1 text-[11px] text-[var(--color-ink-subtle)] transition-colors hover:text-[var(--color-ink)]"
               >
-                <ArrowLeft className="h-3 w-3" /> directory
+                <ArrowLeft className="h-3 w-3" /> Browse
               </Link>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+              <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight">
                 {building.name}
               </h1>
-              <p className="text-sm text-[var(--color-ink-muted)]">
+              <p className="mt-0.5 text-[13px] text-[var(--color-ink-muted)]">
                 {building.address || "—"}
+                <span className="mx-2 text-[var(--color-ink-subtle)]">·</span>
+                <span className="font-mono text-[11px]">{sceneSummary}</span>
               </p>
             </div>
-            <Badge tone="accent">published</Badge>
+            <div className="flex items-center gap-2">
+              <Badge tone="accent">live</Badge>
+            </div>
           </div>
         </div>
 
@@ -130,10 +138,10 @@ function ProfileOverlay({
     <div className="panel-glass absolute bottom-4 left-4 right-4 lg:right-auto max-w-xl rounded-[var(--r-md)] px-4 py-3">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-primary-glow)] font-mono">
-          profile · {mode}
+          {mode === "interior" ? "Apartment" : "Building"}
         </span>
         <span className="text-[10px] text-[var(--color-ink-subtle)]">
-          grounding the assistant
+          what the assistant knows
         </span>
       </div>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">

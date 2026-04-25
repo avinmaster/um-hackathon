@@ -27,9 +27,9 @@ export function DecisionLog({
         onClick={() => setOpen((o) => !o)}
       >
         <div className="flex items-center gap-2">
-          <span className="font-medium">Decision log</span>
+          <span className="font-medium">Activity</span>
           <span className="text-xs text-[var(--color-ink-subtle)]">
-            ({scoped.length} GLM call{scoped.length === 1 ? "" : "s"})
+            ({scoped.length} AI call{scoped.length === 1 ? "" : "s"})
           </span>
         </div>
         <span className="text-xs text-[var(--color-ink-muted)]">{open ? "hide" : "show"}</span>

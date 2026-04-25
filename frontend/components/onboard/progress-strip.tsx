@@ -29,11 +29,11 @@ export function ProgressStrip({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--color-ink-subtle)]">
-            workflow progress
+            progress
           </span>
           <span className="text-[12px] text-[var(--color-ink-muted)]">
             <span className="text-[var(--color-ink)] font-medium">{passed}</span>
-            {" "}of {total} steps complete
+            {" "}of {total} done
           </span>
         </div>
         <span className="font-mono text-[11px] text-[var(--color-ink-muted)]">

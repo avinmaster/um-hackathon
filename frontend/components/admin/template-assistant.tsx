@@ -27,7 +27,7 @@ export function TemplateAssistant({
     {
       role: "assistant",
       content:
-        "I'm your template tutor. Ask why a step exists, what a field should capture, or have me draft a new starter template from a one-line brief.",
+        "Ask anything about the workflow — what a step is for, what a field should capture, or have me draft a starter from a one-line description.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -112,20 +112,22 @@ export function TemplateAssistant({
             <Wand2 className="h-3.5 w-3.5" />
           </div>
           <div>
-            <div className="text-sm font-semibold">Draft with AI</div>
+            <div className="text-sm font-semibold">Draft a workflow</div>
             <div className="text-[10px] text-[var(--color-ink-subtle)]">
-              One sentence → GLM proposes the whole template.
+              Describe what you need. The AI fills in the steps.
             </div>
           </div>
         </div>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe what this city needs…"
+          placeholder="What does this city require?"
           className="min-h-[88px] text-xs"
         />
         <div className="flex items-center justify-between">
-          <Badge tone="brand">GLM tool: draft_template</Badge>
+          <span className="text-[11px] text-[var(--color-ink-subtle)]">
+            Replaces the current steps.
+          </span>
           <Button size="sm" onClick={draft} disabled={drafting || !description.trim()}>
             {drafting ? "Drafting…" : "Generate"}
           </Button>
@@ -137,7 +139,7 @@ export function TemplateAssistant({
         <div className="grid h-6 w-6 place-items-center rounded-md bg-[var(--color-bg-raised)] text-[var(--color-ink-muted)]">
           <Sparkles className="h-3 w-3" />
         </div>
-        <div className="text-xs font-semibold">Explain / tutor</div>
+        <div className="text-xs font-semibold">Ask anything</div>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((m, i) => {
@@ -226,7 +228,7 @@ export function TemplateAssistant({
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Why do I need a cross-check step?"
+          placeholder="Why do I need a cross-check?"
           className="h-10 flex-1 rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-sm outline-none transition-all focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]"
           disabled={streaming}
         />

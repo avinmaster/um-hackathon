@@ -12,43 +12,50 @@ import { Reveal, RevealItem } from "../motion/reveal";
 
 const PRIMS: Array<{
   name: string;
+  label: string;
   blurb: string;
   icon: LucideIcon;
   span: string; // tailwind grid span
 }> = [
   {
     name: "collect_form",
-    blurb: "Structured data, no free-text. Validation per field, prefilled across runs.",
+    label: "Form",
+    blurb: "Short, validated form. Owner fills it in.",
     icon: FileInput,
     span: "md:col-span-2",
   },
   {
     name: "upload_compliance",
-    blurb: "Documents are checked criterion-by-criterion. Verdicts logged with evidence.",
+    label: "Compliance docs",
+    blurb: "Documents the AI checks against your rules.",
     icon: UploadCloud,
     span: "md:col-span-1",
   },
   {
     name: "upload_content",
-    blurb: "Public-facing facts only. GLM extracts; the assistant grounds.",
+    label: "Public docs",
+    blurb: "Photos and facts the assistant can answer from.",
     icon: Image,
     span: "md:col-span-1",
   },
   {
     name: "cross_check",
-    blurb: "Contradictions across docs surface as resolvable cards.",
+    label: "Cross-check",
+    blurb: "Compares earlier steps. Flags contradictions.",
     icon: GitCompare,
     span: "md:col-span-2",
   },
   {
     name: "human_review",
-    blurb: "Owner sees a summary + gaps. Confirms before publish.",
+    label: "Human review",
+    blurb: "Owner reviews and confirms before going live.",
     icon: ScrollText,
     span: "md:col-span-2",
   },
   {
     name: "publish",
-    blurb: "Building lands in the directory. Visitors get the 3D + assistant.",
+    label: "Publish",
+    blurb: "Building goes live in the directory.",
     icon: FileCheck,
     span: "md:col-span-1",
   },
@@ -67,10 +74,10 @@ export function PrimitivesBento() {
       />
       <Reveal stagger className="mx-auto flex max-w-[1400px] flex-col items-center">
         <RevealItem className="mb-3 text-[11px] uppercase tracking-[0.28em] text-[var(--color-ink-subtle)]">
-          The primitives
+          Step types
         </RevealItem>
         <RevealItem className="mb-14 max-w-[640px] text-balance text-center text-[clamp(1.6rem,3vw,2.4rem)] font-semibold leading-tight tracking-tight">
-          Six building blocks. Combine them for any city.
+          Six building blocks. Mix them for any city.
         </RevealItem>
         <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
           {PRIMS.map((p) => (
@@ -96,8 +103,8 @@ function PrimitiveCard({
         <div className="grid h-9 w-9 place-items-center rounded-md bg-[color-mix(in_srgb,var(--color-primary)_18%,transparent)] text-[var(--color-primary-glow)] transition-colors duration-300 group-hover:bg-[color-mix(in_srgb,var(--color-cyan)_22%,transparent)] group-hover:text-[var(--color-cyan)]">
           <Icon className="h-4 w-4" />
         </div>
-        <span className="font-mono text-[12px] text-[var(--color-ink)]">
-          {prim.name}
+        <span className="text-[13px] font-medium text-[var(--color-ink)]">
+          {prim.label}
         </span>
       </div>
       <p className="text-[14px] leading-relaxed text-[var(--color-ink-muted)]">

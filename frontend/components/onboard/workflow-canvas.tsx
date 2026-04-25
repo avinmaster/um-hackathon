@@ -297,17 +297,14 @@ function KeyboardLegend() {
   return (
     <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-translucent)] px-3 py-1.5 text-[10px] text-[var(--color-ink-subtle)] backdrop-blur transition-opacity duration-500">
       <Kbd>drag</Kbd>
-      <span>pan</span>
+      <span>to pan</span>
       <span className="opacity-40">·</span>
       <Kbd>J</Kbd>
       <Kbd>K</Kbd>
-      <span>step</span>
+      <span>next / prev</span>
       <span className="opacity-40">·</span>
       <Kbd>F</Kbd>
       <span>fit</span>
-      <span className="opacity-40">·</span>
-      <Kbd>R</Kbd>
-      <span>reset</span>
     </div>
   );
 }

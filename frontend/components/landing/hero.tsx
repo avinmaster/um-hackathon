@@ -45,7 +45,7 @@ export function Hero() {
             <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-cyan)] opacity-60 pulse-dot" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-cyan)]" />
           </span>
-          GLM online ·
+          AI online ·
           <span className="font-mono text-[var(--color-ink)]">ilmu-glm-5.1</span>
         </motion.div>
 
@@ -57,7 +57,7 @@ export function Hero() {
           className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[var(--color-ink-subtle)]"
         >
           <Sparkles className="h-3.5 w-3.5 text-[var(--color-primary)]" />
-          UMHackathon 2026 · Domain 1 · Agentic workflows
+          UMHackathon 2026 · Domain 1
         </motion.div>
 
         <h1 className="relative text-balance text-[clamp(2.4rem,6vw,4.6rem)] font-semibold leading-[1.05] tracking-tight">
@@ -79,11 +79,10 @@ export function Hero() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-8 max-w-[640px] text-[1.05rem] leading-relaxed text-[var(--color-ink-muted)]"
+          className="mt-8 max-w-[600px] text-[1.05rem] leading-relaxed text-[var(--color-ink-muted)]"
         >
-          Admins author city-specific templates. Owners run them step by step.
-          GLM verifies each document, flags contradictions, and grounds a
-          public assistant —{" "}
+          Cities define a workflow. Owners submit buildings through it. The AI
+          verifies the documents and answers visitor questions —{" "}
           <span className="text-[var(--color-ink)]">all from one engine</span>.
         </motion.p>
 
@@ -97,20 +96,20 @@ export function Hero() {
             href="/admin"
             className="group inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-deep)]"
           >
-            Author a template
+            Build a workflow
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
           <Link
             href="/onboard"
             className="rounded-md border border-[var(--color-border-strong)] bg-[var(--color-bg-elev)] px-5 py-2.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-primary)]/60 hover:text-[var(--color-primary-glow)]"
           >
-            Run the workflow as an owner
+            Submit a building
           </Link>
           <Link
             href="/buildings"
             className="group inline-flex items-center gap-1.5 rounded-md px-4 py-2.5 text-sm font-medium text-[var(--color-ink-muted)] transition-colors hover:text-[var(--color-ink)]"
           >
-            Browse the 3D directory
+            Browse buildings
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </motion.div>

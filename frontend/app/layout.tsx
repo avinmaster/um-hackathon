@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Opus Magnum — adaptive onboarding",
+  title: "Opus Magnum — building submissions, by workflow",
   description:
-    "AI-driven building onboarding workflows. GLM reasons, humans review, cities scale by config.",
+    "Cities define a workflow. Owners submit buildings through it. The AI verifies the documents and answers visitor questions.",
 };
 
 const NO_FLASH_THEME = `

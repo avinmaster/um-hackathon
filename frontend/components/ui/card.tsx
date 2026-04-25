@@ -25,7 +25,10 @@ export function CardHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("border-b border-[var(--color-border)] px-4 py-3", className)}
+      className={cn(
+        "flex flex-col gap-1 border-b border-[var(--color-border)] px-5 py-4",
+        className,
+      )}
       {...props}
     />
   );
@@ -36,7 +39,28 @@ export function CardTitle({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h3 className={cn("text-sm font-semibold tracking-tight", className)} {...props} />
+    <h3
+      className={cn(
+        "text-[15px] font-semibold tracking-tight text-[var(--color-ink)]",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn(
+        "text-[13px] leading-relaxed text-[var(--color-ink-muted)]",
+        className,
+      )}
+      {...props}
+    />
   );
 }
 
@@ -44,5 +68,20 @@ export function CardBody({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-4", className)} {...props} />;
+  return <div className={cn("p-5", className)} {...props} />;
+}
+
+export function CardFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 border-t border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_50%,transparent)] px-5 py-3",
+        className,
+      )}
+      {...props}
+    />
+  );
 }

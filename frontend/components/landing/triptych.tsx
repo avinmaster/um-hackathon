@@ -9,25 +9,25 @@ const ROLES = [
   {
     title: "Admin",
     blurb:
-      "Draft a city template from one sentence. GLM proposes the steps; you tweak and publish.",
+      "Pick a city. Describe what you need. The AI drafts the workflow — you adjust and publish.",
     href: "/admin",
-    cta: "Author a template",
+    cta: "Build a workflow",
     Illustration: AdminIllustration,
   },
   {
     title: "Owner",
     blurb:
-      "Pick your city, fill the form, upload proofs. Watch every AI verdict unfold per document.",
+      "Pick your city, name your building, follow the steps. Every AI check is shown.",
     href: "/onboard",
-    cta: "Run a workflow",
+    cta: "Submit a building",
     Illustration: OwnerIllustration,
   },
   {
     title: "Visitor",
     blurb:
-      "Browse published buildings in 3D. Ask the grounded assistant — every fact cites a source.",
+      "Browse buildings in 3D. Ask the assistant — answers come straight from the uploaded documents.",
     href: "/buildings",
-    cta: "Browse the directory",
+    cta: "Browse buildings",
     Illustration: VisitorIllustration,
   },
 ];
@@ -37,10 +37,10 @@ export function Triptych() {
     <section className="relative w-full px-6 py-28">
       <Reveal stagger className="mx-auto flex max-w-[1400px] flex-col items-center">
         <RevealItem className="mb-3 text-[11px] uppercase tracking-[0.28em] text-[var(--color-ink-subtle)]">
-          Three roles · one engine
+          One engine, three roles
         </RevealItem>
         <RevealItem className="mb-14 text-balance text-center text-[clamp(1.6rem,3vw,2.4rem)] font-semibold leading-tight tracking-tight">
-          Built for everyone in the building lifecycle
+          Same workflow, three sides
         </RevealItem>
         <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
           {ROLES.map((r) => (

@@ -26,26 +26,26 @@ const STEPS: Array<{
 }> = [
   {
     icon: ScrollText,
-    title: "Author the workflow",
-    copy: "Admin drafts a city-specific template with GLM in plain English.",
+    title: "Build the workflow",
+    copy: "Admin describes the city's rules. The AI drafts the steps.",
     range: [0.05, 0.3],
   },
   {
     icon: UploadCloud,
-    title: "Verify with GLM",
-    copy: "Compliance docs are checked criterion-by-criterion. Every verdict logged.",
+    title: "Check the documents",
+    copy: "Each upload is checked rule by rule. Everything is logged.",
     range: [0.3, 0.55],
   },
   {
     icon: GitCompare,
-    title: "Cross-check",
-    copy: "Contradictions across documents surface as cards. Owner resolves them.",
+    title: "Catch contradictions",
+    copy: "Mismatches across documents surface as cards. Owner resolves them.",
     range: [0.55, 0.8],
   },
   {
     icon: CheckCircle2,
-    title: "Publish",
-    copy: "The building lands in the directory. The grounded assistant is ready.",
+    title: "Go live",
+    copy: "The building lands in the directory. The assistant is ready.",
     range: [0.8, 1.0],
   },
 ];
@@ -179,7 +179,7 @@ export function Pinned3D() {
             </Canvas>
             {/* hint label */}
             <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-translucent)] px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-subtle)] backdrop-blur">
-              scroll to advance
+              scroll to play
             </div>
           </div>
 
@@ -187,7 +187,7 @@ export function Pinned3D() {
           <div className="hidden flex-col justify-center lg:flex">
             <div className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-subtle)]">
               <Sparkles className="h-3 w-3 text-[var(--color-cyan)]" />
-              decision_log · live
+              activity · live
             </div>
             <div className="relative max-h-[60vh] overflow-hidden rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg-elev)]/60 p-3 font-mono text-[11px] backdrop-blur">
               <div className="flex flex-col gap-1.5">

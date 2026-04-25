@@ -150,7 +150,7 @@ function PrimitiveBody({
         {alreadyDone ? (
           <SuccessBlock>
             <CheckCircle2 className="inline h-4 w-4 text-[var(--color-accent)] mr-2" />
-            Submitted — form data is on the next steps.
+            Submitted. Carrying this forward to the next step.
             <pre className="mt-2 text-xs font-mono text-[var(--color-ink-muted)] whitespace-pre-wrap">
               {JSON.stringify(stepOutput, null, 2)}
             </pre>
@@ -178,7 +178,7 @@ function PrimitiveBody({
         {cfg.criteria && (
           <div className="rounded-[var(--r-md)] border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
             <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-[var(--color-ink-subtle)] mb-2">
-              Verification criteria
+              What we check
             </div>
             <ul className="space-y-1.5 text-sm">
               {cfg.criteria.map((c, i) => (
@@ -206,8 +206,8 @@ function PrimitiveBody({
             submitting={submitting}
             label={
               step.primitive === "upload_compliance"
-                ? "These documents are verified by GLM against the criteria above. They are NOT shown publicly."
-                : "These documents become part of the public listing. GLM extracts facts, the visitor assistant grounds on them."
+                ? "Checked against the rules above. Not shown publicly."
+                : "Used in the public listing. Visitors can ask the assistant about them."
             }
           />
         )}
@@ -226,7 +226,7 @@ function PrimitiveBody({
         {contradictions.length === 0 && resolved && (
           <SuccessBlock>
             <CheckCircle2 className="inline h-4 w-4 text-[var(--color-accent)] mr-2" />
-            No contradictions detected across your documents.
+            No contradictions found across your documents.
           </SuccessBlock>
         )}
         {contradictions.length > 0 && (
@@ -259,7 +259,7 @@ function PrimitiveBody({
           </article>
         ) : (
           <div className="rounded-[var(--r-md)] border border-dashed border-[var(--color-border)] p-6 text-center text-sm text-[var(--color-ink-subtle)]">
-            Summary will generate when this step is reached.
+            A summary will appear here when this step starts.
           </div>
         )}
         {gaps.length > 0 && (
@@ -303,15 +303,15 @@ function PrimitiveBody({
             <>
               <div className="flex items-center gap-2 text-[var(--color-accent)]">
                 <CheckCircle2 className="h-4 w-4" />
-                <span className="font-medium">Building published</span>
+                <span className="font-medium">Live</span>
               </div>
               <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
-                The public listing is live — visitors can now explore the 3D
-                scene and ask the grounded assistant.
+                The listing is public — visitors can explore the 3D scene and
+                ask the assistant.
               </p>
             </>
           ) : (
-            <>Publish step fires automatically once the review is confirmed.</>
+            <>Publishing happens automatically once you confirm the review.</>
           )}
         </div>
       </div>
@@ -351,7 +351,7 @@ function VerdictCard({ verdict }: { verdict: Record<string, unknown> }) {
           <XCircle className="h-4 w-4 text-[var(--color-fail)]" />
         )}
         <span className="font-medium">
-          {passed ? "Verification passed" : "Verification failed"}
+          {passed ? "Looks good" : "Needs a fix"}
         </span>
       </div>
       <div className="text-[var(--color-ink-muted)]">{summary}</div>

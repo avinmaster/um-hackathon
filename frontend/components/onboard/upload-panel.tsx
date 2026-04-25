@@ -134,10 +134,10 @@ const stageCopy: Record<
   FileStage,
   { Icon: typeof Loader2; label: string; iconTone: string }
 > = {
-  selected: { Icon: Upload, label: "ready to upload", iconTone: "text-[var(--color-ink-muted)]" },
+  selected: { Icon: Upload, label: "ready", iconTone: "text-[var(--color-ink-muted)]" },
   uploading: { Icon: Loader2, label: "uploading…", iconTone: "text-[var(--color-info)] animate-spin" },
-  parsing: { Icon: Loader2, label: "parsing text…", iconTone: "text-[var(--color-info)] animate-spin" },
-  verifying: { Icon: Loader2, label: "GLM verifying…", iconTone: "text-[var(--color-accent)] animate-spin" },
+  parsing: { Icon: Loader2, label: "reading…", iconTone: "text-[var(--color-info)] animate-spin" },
+  verifying: { Icon: Loader2, label: "checking…", iconTone: "text-[var(--color-accent)] animate-spin" },
   done: { Icon: CheckCircle2, label: "done", iconTone: "text-[var(--color-accent)]" },
   failed: { Icon: CircleX, label: "failed", iconTone: "text-[var(--color-fail)]" },
 };
