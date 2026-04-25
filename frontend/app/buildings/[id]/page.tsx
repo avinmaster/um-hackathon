@@ -159,10 +159,21 @@ function ProfileOverlay({
 }
 
 function prettyValue(v: unknown): string {
-  if (Array.isArray(v)) return v.join(", ");
+  if (Array.isArray(v)) return v.map(formatItem).filter(Boolean).join(", ");
   if (v === null || v === undefined) return "—";
-  if (typeof v === "object") return JSON.stringify(v);
+  if (typeof v === "object") return formatItem(v);
   return String(v);
+}
+
+function formatItem(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  if (typeof v !== "object") return String(v);
+  const o = v as Record<string, unknown>;
+  const label = (o.type ?? o.name ?? o.label ?? o.title) as string | undefined;
+  const count = o.count as number | undefined;
+  if (label && typeof count === "number") return `${count}× ${label}`;
+  if (label) return String(label);
+  return JSON.stringify(o);
 }
 
 function SceneSkeleton() {
