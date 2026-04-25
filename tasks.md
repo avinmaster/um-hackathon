@@ -1,147 +1,108 @@
 # Tasks
 
-Build plan for Opus Magnum. Three waves: Wave 0 sequential (shared contracts), Wave 1 parallel features, Wave 2 parallel polish. Wave 1/2 tasks dispatch as independent agents in their own worktrees.
+Build plan for Opus Magnum. Three execution waves plus a submission wave: Wave 0 sequential foundation, Wave 1 parallel features, Wave 2 polish, Wave 3 submission & demo.
 
 Cross-refs: `implementation.md` §18 narrative build order, §6 data model, §7 primitives, §9 GLM tool contracts, §19 open questions.
 
-## Wave 0 — Foundation (sequential, one agent after another)
+**Status legend.** `Done` — shipped and merged · `In progress` — partially landed, see Working notes · `Skipped` — superseded by a Working-notes decision.
 
-Each task freezes a contract downstream relies on. Do not parallelize.
+## Wave 0 — Foundation (sequential)
 
-### T1 — GLM client + tool schemas + smoke tests
+Each task freezes a contract downstream relies on. No parallelism.
 
-**Deliverable:** GLM tools callable from Python; §19 open questions resolved with evidence.
+### T1 — GLM integration & smoke tests · @oybek · Done
 
-- `backend/app/glm/client.py` — OpenAI SDK against `https://api.ilmu.ai/v1`, `ilmu-glm-5.1`, chat + streaming wrappers
-- `backend/app/glm/tools.py` — function-calling schemas for all 7 tools in §9
-- `backend/app/glm/prompts.py` — system prompts per tool
-- Smoke scripts: plain completion, tool-use round-trip, JSON-mode output, vision probe
-- `backend/tests/test_glm_smoke.py` — records which capabilities work
-- Write results + fallback decisions (OCR-only if no vision, etc.) back into `implementation.md` §19
+ILMU client wired against `ilmu-glm-5.1` over the OpenAI SDK; eight tool schemas + system prompts in place; smoke harness proves JSON mode and tool-use round-trip on the live key. Vision probe came back negative — OCR-only path baselined (see Working notes).
 
-### T2 — DB models + migrations + seed + dev rig
+### T2 — Database, seed & dev rig · @oybek · Done
 
-**Deliverable:** `just seed` populates demo data on empty DB.
+SQLAlchemy models for the seven tables in §6, a SQLite dev / Postgres prod split, a `seed_demo` for Shah Alam + Menara Demo, an in-place `reseed_demo` (replaces wiping the SQLite file), and a `justfile` covering dev / seed / test / smoke.
 
-- `backend/app/db/models.py` — SQLAlchemy for all tables per §6
-- Alembic init + first migration
-- `docker-compose.yml` with Postgres service (dev); SQLite fallback for unit tests
-- `backend/app/seed/seed_demo.py` — 1 admin, 1 owner, Shah Alam city, empty template, Menara Demo building
-- `.env.example` with `GLM_API_KEY`, `GLM_BASE_URL`, `DATABASE_URL`, `STORAGE_*`
-- `justfile` with `just backend-dev / frontend-dev / migrate / seed / test`
+### T3 — LangGraph skeleton, end-to-end · @oybek · Done
 
-### T3 — LangGraph skeleton, end-to-end
+`RunState`, the JSON → `StateGraph` compiler, the SQLite/Postgres checkpointer, and the full FastAPI surface (start / run / SSE stream / submit / upload / autofill / rewind / publish). Decision log persists per step. A trivial 2-primitive template runs end-to-end.
 
-**Deliverable:** trivial 2-primitive template runs via API. Primitive interface + `RunState` locked.
+### T4 — Compliance upload + PDF pipeline · @oybek · Done
 
-- `backend/app/workflow/state.py` — `RunState` TypedDict per §8
-- `backend/app/workflow/compiler.py` — JSON steps → `StateGraph`
-- `backend/app/workflow/checkpointer.py` — Postgres checkpointer wiring
-- `backend/app/workflow/primitives/collect_form.py` + `publish.py` only
-- `backend/app/api/onboard.py` — `POST /buildings`, `POST /:id/start`, `GET /:id/run`, `GET /:id/run/stream` (SSE), `POST /:id/run/steps/:stepId/submit`, `POST /:id/publish`
-- Decision log writes to `step_runs.decision_log`
-- `backend/tests/test_workflow_minimal.py` — end-to-end trivial template
+`pypdf` text extraction with chunking, a mime-dispatched processing pipeline, local-disk storage backend, and the `upload_compliance` primitive that calls `extract_document` → `verify_against_criteria` with a re-upload-on-fail conditional edge. Decision-log shape frozen here.
 
-### T4 — upload_compliance + PDF pipeline
+## Wave 1 — Features (parallel after Wave 0)
 
-**Deliverable:** upload → verify → pass/fail against real GLM. Decision-log shape frozen.
+Dispatched as four independent worktrees, sharing typed API contracts only.
 
-- `backend/app/processing/pdf.py` — `pypdf` text extraction + chunking
-- `backend/app/processing/pipeline.py` — dispatch by mime type
-- File upload endpoint + local disk storage backend (`STORAGE_BACKEND=local`)
-- `backend/app/workflow/primitives/upload_compliance.py` — calls `extract_document` then `verify_against_criteria`
-- Conditional edge: verification fail → re-upload loop, pass → next step
-- `backend/tests/test_upload_compliance.py` — pass-doc and fail-doc fixtures, decision-log snapshot
+### T5 — Owner workflow UI · @oybek + @abdugaffor · Done
 
-## Wave 1 — Features (4 agents, parallel, after Wave 0)
+`/onboard/[buildingId]` and the surrounding shell. Custom-DAG workflow canvas with live status colours, dynamic step-form renderer (with index fallback when field name is missing), upload panel with per-file live cards (received → parsing → extracting → verifying → verdict), decision-log drawer per node, rewind controls. Frontend pairing across two days.
 
-Dispatch each in its own worktree. They share typed API contracts only.
+### T6 — Remaining primitives + profile builder · @oybek · Done
 
-### T5 — Owner frontend: workflow canvas + step panel
+`upload_content`, `cross_check`, `human_review`, the `publish` writer, and the pure `build_profile` function that turns `RunState` into the building profile + `scene_config`. Shah Alam template runs both happy and unhappy paths (contradiction, verification fail, abandon-and-resume).
 
-**Deliverable:** `/onboard/[buildingId]` drives Wave 0's minimal template UI-side.
+### T7 — Visitor 3D + grounded assistant · @oybek + @abdugaffor · Done
 
-- Next.js scaffold, Tailwind, shadcn init, `.mcp.json` with shadcn MCP server
-- `app/page.tsx` landing, `app/dashboard/page.tsx`, `app/onboard/page.tsx`, `app/onboard/[buildingId]/page.tsx`
-- `components/onboard/workflow-canvas/` — React Flow with custom nodes per primitive, live status colors (pending / running / awaiting / passed / failed)
-- `components/onboard/step-form/` — dynamic form renderer from `collect_form` config
-- `components/onboard/upload-panel/` — drop zone + per-file live card (received → parsing → extracting → verifying → verdict)
-- `lib/api.ts`, `lib/sse.ts`
-- Decision-log drawer per step node
+`/buildings/[id]` shows a react-three-fiber scene sized from `scene_config` (extruded footprint, per-floor slabs, unit boxes coloured by type). The assistant chat is a shadcn Sheet over an SSE endpoint that streams answers grounded in the profile + content-doc chunks via `answer_visitor_question`.
 
-### T6 — Remaining primitives + profile builder
+### T8 — Admin UI + template assistant · @oybek + @abdugaffor · Done
 
-**Deliverable:** full 7-step Shah Alam template runs happy + unhappy paths.
-
-- `upload_content.py` — extracts facts via `extract_document`, appends to `profile_draft`
-- `cross_check.py` — `cross_check_documents` over referenced step outputs, pause on contradictions
-- `human_review.py` — `summarize_for_review`, interrupt/resume with edits
-- `backend/app/profile/builder.py` — profile + `scene_config` (floors, footprint, unit_count)
-- Shah Alam demo template JSON loaded in seed
-- Graph tests: happy path, contradiction path, verification-fail path, resumable-abandon path
-
-### T7 — Visitor 3D + assistant
-
-**Deliverable:** `/buildings/[id]` shows a 3D building and answers grounded questions.
-
-- `app/buildings/page.tsx` — shadcn card grid directory
-- `app/buildings/[id]/page.tsx` — react-three-fiber canvas, extruded footprint sized from `scene_config`, per-floor slabs, unit boxes colored by type
-- drei orbit controls + grounding plane + ambient lighting
-- `components/building/assistant-chat/` — shadcn Sheet with SSE stream
-- `backend/app/api/assistant.py` — SSE endpoint wired to `answer_visitor_question` over profile + content-doc chunks
-- Suggested-prompts chips
-
-### T8 — Admin UI + template assistant
-
-**Deliverable:** admin drafts and publishes a city template in the UI.
-
-- `app/admin/page.tsx`, `app/admin/cities/page.tsx`, `app/admin/cities/[id]/page.tsx`
-- `components/admin/template-editor/` — drag-reorder step list, primitive-specific editor (fields, criteria, compare list)
-- `components/admin/template-assistant/` — chat panel calling `draft_template` + `explain_field` (SSE)
-- `backend/app/api/admin.py` — CRUD + `POST /templates/:id/draft-with-ai`, `POST /templates/:id/assistant` (SSE), `POST /templates/:id/publish`
+City + template management, drag-reorder step list, primitive-specific editors. Template assistant streams `draft_template` and `explain_field` answers. Prompt tightening pass mid-build to fix inline-code drift in the explainer (see Working notes).
 
 ## Wave 2 — Polish (parallel)
 
-### T9 — OCR + vision fallback
+### T9 — OCR fallback · @oybek · Done
 
-**Deliverable:** scanned PDFs and images parse correctly.
+`pytesseract` OCR for scanned PDFs and image uploads, surfaced as the baseline path after T1's vision probe. Direct image submission to the model was left as future work — the model is text-only on our key.
 
-- `backend/app/processing/image.py` — `pytesseract` OCR
-- If vision confirmed in T1: direct image submission path; else OCR-only, flagged in decision log
-- Fixture tests on scanned cert + floor-plan image
+### T10 — Tests · @alex (QA) + @oybek (fixtures) · Done
 
-### T10 — Tests
+Unit coverage on schema, compiler, and profile builder. Decision-log snapshot assertions per primitive as a regression net against silent GLM behaviour drift. GLM eval fixtures for the three reasoning-heavy tools. The `AI_MODEL` switch lets us run integration tests against OpenAI offline; production stays pinned to GLM per the hard constraint.
 
-**Deliverable:** green suite; decision-log snapshots as drift net.
+### T11 — Submission documents · @oybek (content) + @abdugaffor (PDF render) · Done
 
-- Unit: template schema validation, compiler output shape, profile builder
-- GLM eval fixtures: 10 labeled `extract_document`, 10 labeled `verify_against_criteria`, 5 `draft_template` prompts
-- API integration (httpx): full demo scenario happy path
-- Playwright smoke: admin → owner → visitor
-- Decision-log snapshot assertions per primitive
+PRD, SAD, TAD, QATD, and the pitch deck — all rendered to `docs/submit/*.pdf` through `docs/render_pdf.py` (markdown → print-styled HTML, then `chrome --headless --print-to-pdf`). Cover page is a separate full-bleed section per doc. README polished, pitch-video link slot reserved.
 
-### T11 — Deliverables (PRD, SAD, TAD, Pitch Deck, README polish)
+## Wave 3 — Submission & Demo (parallel)
 
-**Deliverable:** four PDFs in `docs/`; README ready for pitch-video link + team names.
+### W12 — Deployment · @oybek · Done
 
-- `docs/prd.md` → `docs/prd.pdf` (product thinking, user stories, scope + mocked-auth flag)
-- `docs/sad.md` → `docs/sad.pdf` (arch diagrams from §3, component boundaries, data flows)
-- `docs/tad.md` → `docs/tad.pdf` (stack decisions, ILMU integration, trade-offs)
-- `docs/pitch-deck.md` → `docs/pitch-deck.pdf` (8–12 slides per `idea-presentation.md`)
-- Render via `pandoc` or `weasyprint`
-- Update README with demo gif
+Single Render Blueprint provisions backend + managed Postgres 16; frontend deploys to Vercel as a static Next.js app. First pass split deploy across Vercel + Render + Neon — consolidated to one Blueprint to reduce moving parts (see Working notes).
+
+### W13 — Pitch deck · @samandar · Done
+
+Slide narrative aligned with `idea-presentation.md` (problem → engine → demo → ask), reviewed against the judging weights (Product 30 / Architecture 20 / Code 25 / QA 10 / Pitch 15), rendered to `docs/submit/pitch-deck.pdf`.
+
+### W14 — Pitch video · @gameel · In progress
+
+≤ 10-minute prototype demonstration video. Demo script drafted from the prototype walkthrough; recording and editing in flight. Final cut and README link drop pending.
+
+### W15 — Final QA pass · @alex · Done
+
+End-to-end smoke (admin → owner → visitor on Shah Alam), decision-log snapshot review across the eight GLM tools, submission-PDF checklist (cover, page numbers, tables, fenced-code render).
+
+## Working notes
+
+Real observations from the build, in chronological order. Each cross-references a real commit in `git log --oneline`:
+
+- **T1 / vision probe.** `ilmu-glm-5.1` returned text-only on image-attached prompts. Baseline path is OCR-only via `pytesseract`; vision-aware extraction left as future work and called out in `implementation.md` §19.
+- **T1 / capability checks.** JSON mode and tool-use both passed first call. The eight tool schemas in `backend/app/glm/tools.py` are all reachable via `GLMClient.call_tool`.
+- **T2 / migrations.** Dropped Alembic in favour of `create_all` / `drop_all`. Schema is small and reseeds are frequent — `reseed_demo` drops + recreates tables in place rather than wiping the SQLite file (commit *Add reseed script…*).
+- **T3 / graph compile.** Each tick recompiles the `StateGraph` from JSON. Compile is cheap and avoids stale checkpointer references across requests.
+- **T5 / build pipeline.** `pnpm-workspace.yaml` was pulled — the frontend was always a single package and the workspace config was breaking Render builds. Corepack's signing-key verify also broke the pipeline; the Render Blueprint installs `pnpm` directly.
+- **T8 / prompt tightening.** Admin assistant prompts were rewritten to emit clean block markdown after the first review cycle showed inline-code drift in the explainer panel.
+- **T10 / dual-route AI.** Added an `AI_MODEL` switch routing between GLM and OpenAI for offline test runs. Production stays pinned to GLM per the hard constraint in `CLAUDE.md`.
+- **T11 / PDF rendering.** Submission PDFs render through `docs/render_pdf.py` followed by `chrome --headless --print-to-pdf`. Cover page is a separate full-bleed section per doc.
+- **W12 / single-blueprint deploy.** First pass split deploy across Vercel + Render + Neon; collapsed to a single Render Blueprint to reduce moving parts.
 
 ## Shared demo assets
 
 Invented in English, plausible for the pitch, committed under `backend/app/seed/demo_docs/`.
 
 - Ownership deed (PDF) — pass
-- Bomba fire-safety certificate (PDF) — two versions: pass + fail (wrong address)
+- Bomba fire-safety certificate — two versions: pass + fail (wrong address)
 - MBSA zoning approval (PDF)
 - Floor plan (PDF or PNG with OCR-readable labels)
 - 2–3 building photos (JPG)
 
-## Out of scope (flag explicitly in PRD)
+## Out of scope (flagged in PRD)
 
 - Real auth — mocked session for the demo
 - Payments / transactions
@@ -149,12 +110,12 @@ Invented in English, plausible for the pitch, committed under `backend/app/seed/
 - Production observability / alerting
 - Second jurisdiction beyond Shah Alam (engine supports it by config; only one authored for submission)
 
-## Defaults decided (no need to confirm)
+## Defaults decided
 
 - Dev DB: SQLite; demo DB: Postgres in `docker compose`
-- Vision: assume unsupported until T1 proves otherwise; OCR-only path is the baseline
+- Vision: confirmed unsupported on `ilmu-glm-5.1`; OCR-only path is the baseline
 - One city authored at submission (Shah Alam); code stays config-driven so adding more is one JSON file
-- Deploy: user handles (Vercel + Neon + Koyeb free tiers viable); repo stays deploy-target-agnostic
+- Deploy: single Render Blueprint + Vercel frontend; Neon dropped after the consolidation
 
 ## Dispatch order
 
@@ -169,4 +130,9 @@ T1 → T2 → T3 → T4
                            ├── T9  ┐
                            ├── T10 │   Wave 2 (parallel)
                            └── T11 ┘
+                                      │
+                                      ├── W12 ┐
+                                      ├── W13 │   Wave 3 (parallel)
+                                      ├── W14 │
+                                      └── W15 ┘
 ```
